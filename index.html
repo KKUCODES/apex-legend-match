@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="apex">
+<head>
+<meta charset="UTF-8">
+<meta name="theme-color" content="#0a0a15">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="APEX TI - 测试你的 Apex 英雄人格">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APEX TI — 测试你的传奇人格</title>
+
+<link href="vendor/daisyui.min.css" rel="stylesheet" type="text/css" />
+<script src="vendor/tailwind.js"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontDisplay: 'swap',
+      fontFamily: {
+        sans: ['"Segoe UI"', '"PingFang SC"', '"Microsoft YaHei"', 'sans-serif'],
+      },
+      animation: {
+        'float': 'float 3s ease-in-out infinite',
+        'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
+        'fade-in': 'fadeIn .5s ease-out both',
+        'slide-up': 'slideUp .5s ease-out both',
+        'scanline': 'scanline 3s linear infinite',
+        'hud-flicker': 'hudFlicker 4s ease-in-out infinite',
+      },
+      keyframes: {
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-6px)' },
+        },
+        fadeIn: {
+          from: { opacity: '0', transform: 'translateY(12px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        slideUp: {
+          from: { opacity: '0', transform: 'translateY(24px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        pulseGlow: {
+          '0%, 100%': { boxShadow: '0 0 12px rgba(218,41,42,.3)' },
+          '50%': { boxShadow: '0 0 28px rgba(218,41,42,.6)' },
+        },
+        scanline: {
+          '0%': { top: '-10%' },
+          '100%': { top: '110%' },
+        },
+        hudFlicker: {
+          '0%, 100%': { opacity: '1' },
+          '92%': { opacity: '1' },
+          '93%': { opacity: '.7' },
+          '94%': { opacity: '1' },
+          '96%': { opacity: '.8' },
+          '97%': { opacity: '1' },
+        },
+      }
+    }
+  },
+  daisyui: {
+    themes: [{
+      apex: {
+        "primary": "#DA292A",
+        "primary-content": "#ffffff",
+        "secondary": "#E8611A",
+        "secondary-content": "#ffffff",
+        "accent": "#FFB400",
+        "accent-content": "#1a1a1a",
+        "neutral": "#1C1C2E",
+        "neutral-content": "#E0E0E0",
+        "base-100": "#151525",
+        "base-200": "#1E1E35",
+        "base-300": "#2A2A45",
+        "base-content": "#D4D4E0",
+        "info": "#00D4AA",
+        "success": "#43B581",
+        "warning": "#FFB400",
+        "error": "#DA292A",
+        "--rounded-box": "0.75rem",
+        "--rounded-btn": "0.5rem",
+        "--rounded-badge": "1.5rem",
+        "--animation-btn": "0.2s",
+        "--animation-input": "0.15s",
+        "--btn-focus-scale": "0.97",
+        "--border-btn": "1px",
+        "--tab-border": "1px",
+        "--tab-radius": "0.5rem",
+      }
+    }],
+  },
+}
+</script>
+
+<style>
+  /* 粒子背景 */
+  .particle-bg { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+  .particle-bg .dot { position:absolute; border-radius:50%; animation:particleFloat linear infinite; opacity:0; }
+  @keyframes particleFloat {
+    0% { transform:translateY(105vh) scale(0) rotate(0deg); opacity:0; }
+    15% { opacity:.6; }
+    85% { opacity:.1; }
+    100% { transform:translateY(-5vh) scale(1.4) rotate(180deg); opacity:0; }
+  }
+
+  /* HUD 角标装饰 */
+  .hud-card { position: relative; }
+  .hud-card::before, .hud-card::after {
+    content:''; position:absolute; width:16px; height:16px; pointer-events:none;
+  }
+  .hud-card::before {
+    top:-1px; left:-1px;
+    border-top: 2px solid #DA292A; border-left: 2px solid #DA292A;
+  }
+  .hud-card::after {
+    bottom:-1px; right:-1px;
+    border-bottom: 2px solid #DA292A; border-right: 2px solid #DA292A;
+  }
+
+  /* 扫描线 */
+  .scanline-overlay {
+    position:absolute; inset:0; pointer-events:none; overflow:hidden; border-radius:50%;
+  }
+  .scanline-overlay::after {
+    content:''; position:absolute; left:0; width:100%; height:3px;
+    background:linear-gradient(90deg, transparent, rgba(218,41,42,.4), transparent);
+    animation: scanline 3s linear infinite;
+  }
+
+  /* 选择卡片动画 */
+  .option-card { transition:all .22s cubic-bezier(.4,0,.2,1); }
+  .option-card:hover { transform:translateX(6px); border-color: #DA292A !important; }
+  .option-card:active { transform:scale(.98); }
+
+  /* 进度条菱形标记 */
+  .diamond-marker {
+    width: 12px; height: 12px;
+    background: #DA292A;
+    transform: rotate(45deg) translateY(-16px);
+    box-shadow: 0 0 8px rgba(218,41,42,.5);
+  }
+
+  /* Canvas 锐利渲染 */
+  canvas { image-rendering: auto; }
+
+  /* 滚动条 */
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background:rgba(218,41,42,.2); border-radius:3px; }
+
+  /* ═══════════════════════════════════════════ */
+  /*  响应式 — 手机端适配                       */
+  /* ═══════════════════════════════════════════ */
+  @media (max-width: 640px) {
+    .container { padding: 8px; padding-top: 16px; align-items: flex-start; }
+    .question-text { font-size: 1.05em; line-height: 1.55; }
+    .option-card { padding: 14px 12px !important; gap: 8px !important; }
+    .option-card span:first-child { width: 28px !important; height: 28px !important; font-size: 0.75em !important; }
+    .progress-wrap { margin-bottom: 16px; }
+    .progress-text { font-size: 0.72em; }
+    .dim-label { width: 3.5rem !important; font-size: 0.7em !important; }
+    .btn { padding: 10px 20px !important; font-size: 0.85em !important; }
+    .neighbor-grid { grid-template-columns: repeat(3, 1fr) !important; }
+    .neighbor-grid img { width: 56px !important; height: 56px !important; }
+  }
+  @media (max-width: 380px) {
+    .question-text { font-size: 0.95em; }
+    .option-card { padding: 12px 10px !important; font-size: 0.88em !important; }
+  }
+  @media (hover: none) and (pointer: coarse) {
+    .option-card:hover { transform: none !important; }
+    .option-card:active { background: rgba(218,41,42,.1); }
+    .btn:hover { transform: none !important; }
+  }
+</style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-[#0a0a15] via-[#151530] to-[#1a0a1a] bg-fixed">
+
+<!-- 粒子背景 -->
+<div class="particle-bg" id="particles"></div>
+
+<!-- ==================== 主容器 ==================== -->
+<div class="relative z-10 flex items-center justify-center min-h-screen px-4 py-8" id="app">
+
+  <!-- ====== 欢迎页 ====== -->
+  <div class="screen w-full max-w-xl mx-auto" id="screen-welcome">
+    <div class="card bg-base-100 shadow-2xl text-center p-8 md:p-12 hud-card border border-base-300/30"
+         style="box-shadow:0 0 80px rgba(218,41,42,.12);">
+
+      <!-- Apex 标志 -->
+      <div class="relative w-24 h-24 md:w-28 md:h-28 mx-auto mb-6">
+        <div class="absolute inset-0 bg-gradient-to-br from-primary to-secondary rotate-45 rounded-sm opacity-80"
+             style="clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);"></div>
+        <div class="absolute inset-2 bg-base-100 rotate-45 rounded-sm"
+             style="clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);"></div>
+        <div class="absolute inset-4 bg-gradient-to-br from-primary to-accent rotate-45 rounded-sm animate-pulse-glow"
+             style="clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);"></div>
+      </div>
+
+      <h1 class="text-4xl md:text-5xl font-black mb-2 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent tracking-wider">
+        APEX TI
+      </h1>
+      <p class="text-base-content/60 text-lg mb-8 tracking-wide">
+        测试你的传奇人格
+      </p>
+
+      <!-- 信息条 -->
+      <div class="flex flex-wrap justify-center gap-4 mb-10 text-sm text-base-content/50">
+        <span class="flex items-center gap-1.5"><span class="text-lg">📝</span>30题</span>
+        <span class="flex items-center gap-1.5"><span class="text-lg">⏱️</span>约5分钟</span>
+        <span class="flex items-center gap-1.5"><span class="text-lg">🎯</span>28位传奇</span>
+      </div>
+
+      <!-- 按钮 -->
+      <button class="btn btn-primary btn-lg px-12 text-lg tracking-widest shadow-lg shadow-primary/30 hover:shadow-primary/50 hover:-translate-y-0.5 transition-all font-bold"
+              onclick="startQuiz()">
+        进入赛场
+      </button>
+      <p class="text-xs text-base-content/30 mt-5">回答 30 道题，揭晓你的传奇人格</p>
+    </div>
+  </div>
+
+  <!-- ====== 答题页 ====== -->
+  <div class="screen hidden w-full max-w-xl mx-auto" id="screen-quiz">
+    <div class="card bg-base-100 shadow-2xl p-6 md:p-8 hud-card border border-base-300/30">
+
+      <!-- 进度条 + 菱形标记 -->
+      <div class="mb-4">
+        <div class="flex justify-between text-xs font-semibold text-base-content/40 mb-1">
+          <span id="qLabel">第 1 / 30 题</span>
+          <span id="qPercent">0%</span>
+        </div>
+        <div class="relative">
+          <progress class="progress progress-primary w-full h-3" value="0" max="30" id="progressFill"></progress>
+          <div class="absolute top-0 left-0 transition-all duration-500 ease-out" id="diamondWrapper" style="left: 0%;">
+            <div class="diamond-marker"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 题目 -->
+      <div class="mb-6">
+        <p class="question-text text-lg md:text-xl font-bold text-base-content/90 leading-relaxed mb-6" id="questionText"></p>
+        <div class="space-y-3" id="optionsContainer"></div>
+      </div>
+
+      <!-- 下一题按钮 -->
+      <div class="flex justify-end mt-4">
+        <button class="btn btn-primary btn-sm px-8 opacity-50 pointer-events-none transition-all" id="nextBtn" onclick="nextQuestion()">
+          下一题 →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== 结果页 ====== -->
+  <div class="screen hidden w-full max-w-xl mx-auto" id="screen-result">
+    <div class="space-y-4" id="resultContent"></div>
+    <div class="flex flex-col sm:flex-row gap-3 justify-center mt-6">
+      <button class="btn btn-primary btn-sm px-8" onclick="restartQuiz()">重新检测</button>
+      <button class="btn btn-outline btn-sm px-8 border-primary/30 text-primary hover:bg-primary hover:text-white" onclick="shareResult()">分享档案</button>
+    </div>
+    <p class="text-center text-[10px] text-base-content/20 mt-4">APEX TI · 人格分析系统 · 外域边境</p>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
+  <div id="toast" class="hidden bg-base-200 text-base-content px-6 py-3 rounded-lg shadow-xl border border-primary/20 text-sm toast-slide">
+    已复制到剪贴板
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  LEGEND DATA — 26 entries: [id, "中文名", "英文名", "职业", d1..d5]
+//  五维: 侵略/智略/机动/协作/韧性
+// ============================================================
+const LEGENDS = [
+  [1,"班加罗尔","Bangalore","突击",8.5,5.0,6.5,5.5,7.0],
+  [2,"暴雷","Fuse","突击",9.0,3.5,3.0,3.5,6.5],
+  [3,"艾许","Ash","突击",8.0,7.0,7.5,2.5,6.0],
+  [4,"疯玛吉","Mad Maggie","突击",9.5,3.0,7.0,3.0,7.5],
+  [5,"弹道","Ballistic","突击",7.5,4.0,4.5,5.5,8.0],
+  [6,"探路者","Pathfinder","游侠",5.5,6.0,9.5,7.0,6.0],
+  [7,"恶灵","Wraith","游侠",7.0,5.5,9.0,4.0,7.5],
+  [8,"动力小子","Octane","游侠",7.5,2.5,10.0,3.0,4.5],
+  [9,"亡灵","Revenant","游侠",8.0,4.5,6.5,2.0,9.0],
+  [10,"地平线","Horizon","游侠",5.0,8.0,8.5,5.5,7.0],
+  [11,"瓦尔基里","Valkyrie","游侠",6.5,6.0,8.0,6.5,6.0],
+  [12,"变幻","Alter","游侠",6.0,7.5,8.0,3.5,5.5],
+  [13,"寻血猎犬","Bloodhound","侦察",7.0,8.5,6.0,4.5,7.5],
+  [14,"密客","Crypto","侦察",3.5,9.5,4.0,5.0,6.5],
+  [15,"希尔","Seer","侦察",4.0,9.0,4.5,5.0,5.0],
+  [16,"万蒂奇","Vantage","侦察",4.5,8.5,5.5,4.0,6.0],
+  [17,"直布罗陀","Gibraltar","支援",4.0,5.5,2.5,9.0,8.5],
+  [18,"生命线","Lifeline","支援",3.0,5.0,4.5,9.5,6.0],
+  [19,"幻象","Mirage","支援",4.5,6.5,5.0,6.0,5.0],
+  [20,"罗芭","Loba","支援",4.0,7.0,6.5,5.0,4.5],
+  [21,"纽卡斯尔","Newcastle","支援",5.0,5.0,3.5,9.5,9.0],
+  [22,"导线管","Conduit","支援",5.5,5.0,6.0,8.0,7.0],
+  [23,"腐蚀","Caustic","控制",5.5,8.0,2.0,3.0,8.5],
+  [24,"沃特森","Wattson","控制",3.0,9.0,3.0,6.5,7.5],
+  [25,"兰伯特","Rampart","控制",5.0,7.5,2.5,4.0,8.0],
+  [26,"催化剂","Catalyst","控制",4.5,8.0,3.5,5.5,7.5],
+  [27,"琉雀","Sparrow","侦察",5.5,8.0,9.0,5.0,6.0],
+  [28,"艾克赛尔","Axle","游侠",7.0,4.5,9.5,6.5,8.5],
+  [94,"货运机器人","Cargo Bot","彩蛋",2.0,1.0,5.0,1.0,6.0],
+  [95,"战利品蜘蛛","Loot Tick","彩蛋",1.0,5.0,1.5,5.0,1.0],
+  [96,"飞龙","Flyer","彩蛋",1.0,2.0,10.0,1.0,4.0],
+  [97,"潜行者","Prowler","彩蛋",9.5,1.5,8.0,7.0,5.0],
+  [98,"迦太基蜘蛛","Carthage Spider","彩蛋",6.0,7.0,1.5,8.5,3.5],
+  [99,"马文","MRVN","彩蛋",1.0,1.0,1.0,1.0,1.0],
+];
+
+const CLASS_COLORS = {
+  "突击":"#DA292A","游侠":"#E8611A","侦察":"#00D4AA","支援":"#43B581","控制":"#FFB400","彩蛋":"#7CFC00"
+};
+
+// ============================================================
+//  QUIZ QUESTIONS
+//  维度分块：Q1-6=侵略, Q7-12=智略, Q13-18=机动, Q19-24=协作, Q25-30=韧性
+//  每维6题, 权重[0,1,3,5], 粗分0-30 → 归一化 1 + raw/30*9 → 1.0-10.0
+// ============================================================
+const QUESTIONS = [
+
+  // ══════════ 侵略 (Q1-6) ══════════
+  {
+    q: "跳伞飞船即将降落，你选择跳到哪里？",
+    opts: [
+      ["🔥 热区 — 落地就是干，活下来的才是传奇", [5,0,0,0,0]],
+      ["⚔️ 附近热门资源点 — 先武装再打", [3,0,0,0,0]],
+      ["👀 中等距离 — 能听到枪声但不必立刻卷入", [1,0,0,0,0]],
+      ["🏔️ 偏远角落 — 安心搜集，苟到决赛圈", [0,0,0,0,0]]
+    ]
+  },
+  {
+    q: "你刚搜集完装备，远处传来激烈枪声，你的反应是？",
+    opts: [
+      ["⚡ 立刻冲过去劝架，第三方才是王道", [5,0,0,0,0]],
+      ["🏹 绕到侧面找角度切入战场", [3,0,0,0,0]],
+      ["🔭 在远处观察等两败俱伤再出手", [1,0,0,0,0]],
+      ["🚶 不关我的事，继续搜集物资", [0,0,0,0,0]]
+    ]
+  },
+  {
+    q: "决赛圈，你和敌方都躲在掩体后僵持不下，你会？",
+    opts: [
+      ["💥 主动推出去 — 谁先动手谁赢", [5,0,0,0,0]],
+      ["🎯 闪身骗枪消耗对方护盾再压", [3,0,0,0,0]],
+      ["⏳ 耐心等对方先犯错误", [1,0,0,0,0]],
+      ["🛡️ 等毒圈逼对方移动再做反应", [0,0,0,0,0]]
+    ]
+  },
+  {
+    q: "在军械库里你只能挑一把武器，你选？",
+    opts: [
+      ["🔫 R-99 / 和平使者 — 近距离把人融了", [5,0,0,0,0]],
+      ["💥 VK-47 / 平行步枪 — 中距离稳定输出", [3,0,0,0,0]],
+      ["🎯 充能步枪 / 三重击 — 远距离精确打击", [1,0,0,0,0]],
+      ["🤝 无所谓，让队友先选", [0,0,0,0,0]]
+    ]
+  },
+  {
+    q: "队友在交火中倒地，敌人还在附近，你会？",
+    opts: [
+      ["⚔️ 先把对面全灭了再说，死人不会救", [5,0,0,0,0]],
+      ["🔫 一边压制一边找机会拉人", [3,0,0,0,0]],
+      ["🛡️ 扔烟雾弹/护盾先救人", [1,0,0,0,0]],
+      ["🏃 先确保自己安全，活下来才有资格救", [0,0,0,0,0]]
+    ]
+  },
+  {
+    q: "你在外域酒馆接到一个赏金任务，目标是危险的帮派头目，你的方案是？",
+    opts: [
+      ["🚪 正面踢开大门，让对方知道谁来了", [5,0,0,0,0]],
+      ["💣 在入口布好陷阱再引对方出来", [3,0,0,0,0]],
+      ["🕵️ 先跟踪几天摸清规律再动手", [1,0,0,0,0]],
+      ["📞 找几个帮手一起去比较保险", [0,0,0,0,0]]
+    ]
+  },
+
+  // ══════════ 智略 (Q7-12) ══════════
+  {
+    q: "你发现一个未激活的侦察信标，但激活会暴露你的位置，你？",
+    opts: [
+      ["📡 毫不犹豫激活 — 信息优势比隐蔽更重要", [0,5,0,0,0]],
+      ["👀 先观察周围有没有敌人踪迹再决定", [0,3,0,0,0]],
+      ["🤔 让队友去激活，我负责警戒", [0,1,0,0,0]],
+      ["🚶 不值得冒险，绕过去", [0,0,0,0,0]]
+    ]
+  },
+  {
+    q: "下个安全区在地图对面，你有 60 秒，你的策略是？",
+    opts: [
+      ["🗺️ 立刻分析地形，规划一条避开交火区的最优路线", [0,5,0,0,0]],
+      ["🏃 沿边缘跑，虽然远但安全", [0,3,0,0,0]],
+      ["✂️ 直接穿中心切割，快但有风险", [0,1,0,0,0]],
+      ["👯 跟着其他小队走，他们选的路一般不会太差", [0,0,0,0,0]]
+    ]
+  },
+  {
+    q: "背包快满了，你需要丢掉一样东西，你先丢？",
+    opts: [
+      ["📊 根据当前装备和队伍需求精确计算优先级", [0,5,0,0,0]],
+      ["💊 丢掉多余的治疗物品，留两三组够用就行", [0,3,0,0,0]],
+      ["🔫 丢掉不常用的弹药类型", [0,1,0,0,0]],
+      ["🤷 随便丢一个，到时候再捡", [0,0,0,0,0]]
+    ]
+  },
+  {
+    q: "你发现地上有使用过的医疗箱和散落的弹壳，你的判断是？",
+    opts: [
+      ["🔬 根据弹壳类型推断武器、医疗箱用量推断护盾状态、判断对方还剩多少人", [0,5,0,0,0]],
+      ["📝 推断他们大约多久前经过这里，朝哪个方向走的", [0,3,0,0,0]],
+      ["👀 大概知道附近有人就行了", [0,1,0,0,0]],
+      ["🤷 这说明不了什么，继续走自己的路", [0,0,0,0,0]]
+    ]
+  },
+  {
+    q: "你需要为小队设计一套技能组合来攻克一个坚固的据点，你优先考虑？",
+    opts: [
+      ["🧠 地形分析 + 技能协同 + 进攻时序，制定完整战术", [0,5,0,0,0]],
+      ["📋 列出两三个可行方案让队友选", [0,3,0,0,0]],
+      ["🗣️ 听队友怎么说，大家一起想办法", [0,1,0,0,0]],
+      ["💪 直接冲就完了，计划赶不上变化", [0,0,0,0,0]]
+    ]
+  },
+  {
+    q: "你在 IMC 废弃基地发现一个加密终端，你会？",
+    opts: [
+      ["💻 尝试破解，分析加密类型，寻找系统漏洞", [0,5,0,0,0]],
+      ["🔍 在基地里搜索密码线索和日志", [0,3,0,0,0]],
+      ["🚶 找找有没有其他不需要密码的入口", [0,1,0,0,0]],
+      ["🤷 不感兴趣，浪费时间，继续任务", [0,0,0,0,0]]
+    ]
+  },
+
+  // ══════════ 机动 (Q13-18) ══════════
+  {
+    q: "你更倾向于在哪种地形交战？",
+    opts: [
+      ["🏗️ 高楼天台 — 制高点意味着一切，垂直打击碾压对手", [0,0,5,0,0]],
+      ["🏔️ 错综复杂的山地 — 高低起伏让我如鱼得水", [0,0,3,0,0]],
+      ["🏠 室内走廊 — 狭窄空间里走位更关键", [0,0,1,0,0]],
+      ["🏜️ 开阔平原 — 不需要花里胡哨的移动，拼枪法就够了", [0,0,0,0,0]]
+    ]
+  },
+  {
+    q: "被三个小队包围，你的脱身首选？",
+    opts: [
+      ["🪝 抓钩上天台/气球跳伞 — 从他们头顶离开", [0,0,5,0,0]],
+      ["🏃 滑铲跳冲出一个缺口", [0,0,3,0,0]],
+      ["🛡️ 找掩体慢慢向安全方向转移", [0,0,1,0,0]],
+      ["⚔️ 硬打一条血路出来", [0,0,0,0,0]]
+    ]
+  },
+  {
+    q: "在训练营你花最多时间练什么？",
+    opts: [
+      ["🏃 身法和走位 — 移动是 Apex 的灵魂", [0,0,5,0,0]],
+      ["🎯 枪法 — 打得准比跑得快重要", [0,0,3,0,0]],
+      ["🧪 技能组合 — 把角色技能练到极致", [0,0,1,0,0]],
+      ["📊 策略分析 — 意识比操作重要", [0,0,0,0,0]]
+    ]
+  },
+  {
+    q: "你需要穿越大半个地图，首选出行方式？",
+    opts: [
+      ["🎈 跳伞塔/气球 — 飞过去最快最爽", [0,0,5,0,0]],
+      ["🪝 抓钩/滑索 — 灵活选择路线", [0,0,3,0,0]],
+      ["🏃 沿途搜集步行前进 — 安全稳妥", [0,0,1,0,0]],
+      ["🚶 无所谓，怎么走都行", [0,0,0,0,0]]
+    ]
+  },
+  {
+    q: "在碎片东西这种密集建筑区，你的打法是？",
+    opts: [
+      ["🏗️ 在各建筑间跳跃穿梭 — 他们追不上我的节奏", [0,0,5,0,0]],
+      ["🏢 占据一栋高楼上下灵活移动", [0,0,3,0,0]],
+      ["🏠 在建筑内部利用房间和走廊周旋", [0,0,1,0,0]],
+      ["🏞️ 不进建筑，在外围远距离打", [0,0,0,0,0]]
+    ]
+  },
+  {
+    q: "你看到一条只有极高手速才能通过的捷径，你？",
+    opts: [
+      ["🎯 毫不犹豫尝试 — 不试试怎么知道自己不行", [0,0,5,0,0]],
+      ["👀 先观察确认可行性再试", [0,0,3,0,0]],
+      ["🚶 走安全路线，没必要冒险", [0,0,1,0,0]],
+      ["🤷 只有被追的时候才考虑", [0,0,0,0,0]]
+    ]
+  },
+
+  // ══════════ 协作 (Q19-24) ══════════
+  {
+    q: "你刚加入一个随机小队，第一件事做什么？",
+    opts: [
+      ["📢 主动打招呼，讨论落点和角色分工", [0,0,0,5,0]],
+      ["👍 简单打个招呼，跟随队友节奏", [0,0,0,3,0]],
+      ["👂 等队友开口再回应", [0,0,0,1,0]],
+      ["🤷 不说话，各跳各的", [0,0,0,0,0]]
+    ]
+  },
+  {
+    q: "你找到一件金甲，但队友的护甲也很差，你会？",
+    opts: [
+      ["💛 让给更需要它的队友 — 团队强才是真的强", [0,0,0,5,0]],
+      ["🤔 问队友要不要，他不要我再穿", [0,0,0,3,0]],
+      ["⚖️ 按职业需求分配，突击优先", [0,0,0,1,0]],
+      ["💪 自己穿 — 我更强才能保护队友", [0,0,0,0,0]]
+    ]
+  },
+  {
+    q: "跳伞阶段，你通常会？",
+    opts: [
+      ["🗺️ 主动选择落点并标在地图上，带领队伍", [0,0,0,5,0]],
+      ["🤝 问队友想去哪，尽量达成共识", [0,0,0,3,0]],
+      ["👋 跟随跳伞长的选择", [0,0,0,1,0]],
+      ["🪂 自己跳自己的，不一定非要在一起", [0,0,0,0,0]]
+    ]
+  },
+  {
+    q: "队友被敌方腐蚀气体困住无法脱身，你？",
+    opts: [
+      ["🚀 立刻冲进去拉他出来，生死与共", [0,0,0,5,0]],
+      ["🔫 在外面火力压制给队友创造脱身机会", [0,0,0,3,0]],
+      ["💡 远程提供信息帮助他找出口", [0,0,0,1,0]],
+      ["🛡️ 先确保自己安全，再想办法", [0,0,0,0,0]]
+    ]
+  },
+  {
+    q: "毒圈逼近，你有机会独自逃离，但队友被击倒无法移动，你？",
+    opts: [
+      ["❤️ 回头救，哪怕自己可能走不掉 — 不抛弃队友", [0,0,0,5,0]],
+      ["⚡ 快速评估 — 如果来得及就救，来不及就保自己", [0,0,0,3,0]],
+      ["📋 先进圈保自己，他有复活卡的话还有机会", [0,0,0,1,0]],
+      ["🏃 毒圈不等人，保自己最重要", [0,0,0,0,0]]
+    ]
+  },
+  {
+    q: "你心目中理想的 Apex 小队关系是？",
+    opts: [
+      ["🤝 三人一条心，随时配合 — 队友就是家人", [0,0,0,5,0]],
+      ["📋 各司其职但互相信任 — 专业分工最高效", [0,0,0,3,0]],
+      ["👋 一起玩但各打各的也行", [0,0,0,1,0]],
+      ["🐺 一个人更自由 — 独狼也是一种风格", [0,0,0,0,0]]
+    ]
+  },
+
+  // ══════════ 韧性 (Q25-30) ══════════
+  {
+    q: "你已经连续三局落地成盒，下一局你？",
+    opts: [
+      ["🔥 调整策略继续打 — 失败是传奇的必经之路", [0,0,0,0,5]],
+      ["🔄 换个角色/落点，换个方式再来", [0,0,0,0,3]],
+      ["📺 休息一下看看高手直播学两招", [0,0,0,0,1]],
+      ["🎮 算了，今天状态不好，改天再说", [0,0,0,0,0]]
+    ]
+  },
+  {
+    q: "队友全倒，你一人面对满编三人小队，残甲无头，你？",
+    opts: [
+      ["⚔️ 打 — 哪怕只换掉一个也不亏", [0,0,0,0,5]],
+      ["🎯 找角度逐个击破，一换一是底线", [0,0,0,0,3]],
+      ["🏃 找机会复活队友，翻盘需要人手", [0,0,0,0,1]],
+      ["🛡️ 找掩体保存实力，活着才有输出", [0,0,0,0,0]]
+    ]
+  },
+  {
+    q: "你在冲击猎杀者段位，卡在铂金已经两周了，你？",
+    opts: [
+      ["📝 复盘每局录像，精确找到自己的薄弱环节", [0,0,0,0,5]],
+      ["🔄 换一套打法或者换角色突破瓶颈", [0,0,0,0,3]],
+      ["👥 找更强的队友一起上分", [0,0,0,0,1]],
+      ["🎯 先把目标降到钻石，稳扎稳打", [0,0,0,0,0]]
+    ]
+  },
+  {
+    q: "毒圈正在逼近，你没有任何治疗物品，血量只剩一丝，你？",
+    opts: [
+      ["🏃 全力冲进安全区 — 只要还有一口气就能赢", [0,0,0,0,5]],
+      ["📦 边跑边搜集沿途可能的物资", [0,0,0,0,3]],
+      ["🗺️ 绕路去可能有物资的建筑", [0,0,0,0,1]],
+      ["🧘 接受命运，冷静面对可能的结局", [0,0,0,0,0]]
+    ]
+  },
+  {
+    q: "所有人都说你的打法不可能赢，但你觉得有效，你？",
+    opts: [
+      ["🏔️ 坚持自己的打法继续优化 — 用结果证明一切", [0,0,0,0,5]],
+      ["🔧 做些小调整但不改核心思路", [0,0,0,0,3]],
+      ["👂 听取建议尝试改变一下", [0,0,0,0,1]],
+      ["🤷 也许大家说得对，换个方式试试", [0,0,0,0,0]]
+    ]
+  },
+  {
+    q: "如果你是一名职业 Apex 选手，退役时你希望被记住什么？",
+    opts: [
+      ["⚔️ 永不放弃的精神 — 在所有人放弃时依然站着的那个", [0,0,0,0,5]],
+      ["🏔️ 达到了别人认为不可能达到的巅峰", [0,0,0,0,3]],
+      ["🌱 突破自我的过程比结果更重要", [0,0,0,0,1]],
+      ["🎮 享受每一场比赛的快乐和激情", [0,0,0,0,0]]
+    ]
+  }
+];
+
+// ============================================================
+//  STATE
+// ============================================================
+let scores = [0,0,0,0,0];
+let currentQ = 0;
+let selectedIdx = -1;
+let results = null;
+
+// ============================================================
+//  SCREEN MANAGEMENT
+// ============================================================
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+  document.getElementById('screen-' + name).classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ============================================================
+//  QUIZ FLOW
+// ============================================================
+function startQuiz() {
+  currentQ = 0;
+  selectedIdx = -1;
+  scores = [0,0,0,0,0];
+  renderQuestion();
+  showScreen('quiz');
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[currentQ];
+  document.getElementById('questionText').textContent = q.q;
+  document.getElementById('qLabel').textContent = `第 ${currentQ + 1} / 30 题`;
+  const pct = Math.round((currentQ / 30) * 100);
+  document.getElementById('qPercent').textContent = pct + '%';
+  document.getElementById('progressFill').value = currentQ;
+  document.getElementById('diamondWrapper').style.left = pct + '%';
+
+  const container = document.getElementById('optionsContainer');
+  const labels = ['A', 'B', 'C', 'D'];
+  container.innerHTML = q.opts.map((opt, i) => `
+    <div class="option-card flex items-center gap-3 p-4 rounded-xl border border-base-300/40 bg-base-200/50 cursor-pointer hover:bg-base-200"
+         data-idx="${i}" onclick="selectOption(${i})">
+      <span class="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded text-xs font-bold bg-base-300/60 text-base-content/60">${labels[i]}</span>
+      <span class="text-sm md:text-base text-base-content/80 leading-relaxed">${opt[0]}</span>
+    </div>
+  `).join('');
+
+  selectedIdx = -1;
+  const btn = document.getElementById('nextBtn');
+  btn.classList.add('opacity-50', 'pointer-events-none');
+  if (currentQ === 29) btn.textContent = '查看结果 →';
+  else btn.textContent = '下一题 →';
+}
+
+function selectOption(idx) {
+  selectedIdx = idx;
+  document.querySelectorAll('.option-card').forEach((c, i) => {
+    c.classList.toggle('border-primary', i === idx);
+    c.classList.toggle('bg-primary/10', i === idx);
+    c.classList.toggle('border-base-300/40', i !== idx);
+    c.classList.toggle('bg-base-200/50', i !== idx);
+  });
+  const btn = document.getElementById('nextBtn');
+  btn.classList.remove('opacity-50', 'pointer-events-none');
+}
+
+function nextQuestion() {
+  if (selectedIdx < 0) return;
+  const dims = QUESTIONS[currentQ].opts[selectedIdx][1];
+  for (let i = 0; i < 5; i++) scores[i] += dims[i];
+  if (currentQ < 29) { currentQ++; renderQuestion(); }
+  else { normalizeAndCompute(); showScreen('result'); renderResult(); }
+}
+
+// ============================================================
+//  COMPUTATION
+// ============================================================
+function normalizeAndCompute() {
+  let normalized = scores.map(s => {
+    const n = 1 + (s / 30) * 9;
+    return Math.max(1, Math.min(10, Math.round(n * 10) / 10));
+  });
+  computeResults(normalized);
+}
+
+function euclideanDist(a, b) {
+  let sum = 0;
+  for (let i = 0; i < a.length; i++) sum += (a[i] - b[i]) ** 2;
+  return Math.sqrt(sum);
+}
+
+function computeResults(userDims) {
+  const matches = LEGENDS.map(p => ({
+    legend: p, dist: euclideanDist(userDims, p.slice(4))
+  }));
+  matches.sort((a, b) => a.dist - b.dist);
+  results = { top: matches[0], userDims, all: matches };
+}
+
+// ============================================================
+//  RESULT RENDERING
+// ============================================================
+function renderResult() {
+  const r = results.top;
+  const p = r.legend;
+  const dist = r.dist;
+  const matchPct = (Math.max(0, (1 - dist / 20.1) * 100)).toFixed(1);
+  const classColor = CLASS_COLORS[p[3]] || '#DA292A';
+  const dimNames = ['⚔️ 侵略','🧠 智略','🚀 机动','🤝 协作','🛡️ 韧性'];
+  const uv = results.userDims.map(d => Math.round(d * 10) / 10);
+  const pv = p.slice(4);
+  const neighbors = results.all.filter(n => n.legend[0] !== 99).slice(1, 4);
+
+  const pctNum = parseFloat(matchPct);
+  const isEasterEgg = p[0] === 99;
+  const tierLabel = isEasterEgg ? '🤖 你发现了彩蛋！' : pctNum >= 85 ? '传奇级契合' : pctNum >= 70 ? '战术协同' : pctNum >= 55 ? '同队感应' : '外域路人';
+
+  const now = new Date();
+  const dateStr = now.getFullYear() + '/' + String(now.getMonth()+1).padStart(2,'0') + '/' + String(now.getDate()).padStart(2,'0');
+
+  const portraitFile = p[2].toLowerCase().replace(/\s+/g, '_');
+
+  const container = document.getElementById('resultContent');
+  container.innerHTML = `
+    <div class="space-y-3">
+      <!-- 档案抬头 -->
+      <p class="text-center text-[10px] text-base-content/20">档案编号 APEXTI-${String(p[0]).padStart(3,'0')}　归档 ${dateStr}</p>
+
+      <!-- 传奇画像 -->
+      <div class="card bg-base-100 shadow-2xl p-6 md:p-8 hud-card border border-base-300/30">
+        <div class="flex flex-col items-center">
+          <div class="relative w-24 h-24 md:w-32 md:h-32 mb-3">
+            <img class="w-full h-full object-contain drop-shadow-lg animate-float rounded-full border-2"
+                 style="border-color:${classColor}; box-shadow: 0 0 20px ${classColor}40;"
+                 src="portraits/${portraitFile}.png"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                 alt="${p[1]}">
+            <div class="w-full h-full items-center justify-center text-4xl md:text-5xl hidden" style="color:${classColor}">⬡</div>
+            <div class="scanline-overlay"></div>
+          </div>
+          <h2 class="text-2xl md:text-3xl font-black mt-1" style="background:linear-gradient(135deg, ${classColor}, #FFB400); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">${p[1]}</h2>
+          <p class="text-xs text-base-content/30 font-semibold">${p[2]} · ${p[3]}</p>
+          <div class="flex items-center justify-center gap-2 mt-2">
+            <div class="radial-progress font-bold" style="--value:${pctNum};--size:4rem;--thickness:4px;font-size:0.7rem;color:${classColor}" role="progressbar">${matchPct}%</div>
+            <span class="text-xs font-bold" style="color:${classColor}">${tierLabel}</span>
+          </div>
+        </div>
+
+        <!-- 战术分析 -->
+        <div class="card bg-base-200 rounded-lg p-4 text-left text-sm leading-relaxed mt-4" style="border-left:3px solid ${classColor}">
+          <p class="font-bold text-base-content/80 mb-1.5 text-xs tracking-wider">📋 战术分析</p>
+          <div class="text-base-content/60">${generateDescription(p, dist, uv, pv)}</div>
+        </div>
+
+        <!-- 五维作战数据 -->
+        <div class="mt-4">
+          <p class="font-bold text-base-content/80 mb-2 text-xs tracking-wider">📊 五维作战数据</p>
+          <div class="space-y-2">
+            ${dimNames.map((d, i) => {
+              const uVal = uv[i], pVal = pv[i];
+              return `<div class="flex items-center gap-2 text-xs">
+                <span class="dim-label w-16 text-right text-base-content/50 flex-shrink-0">${d}</span>
+                <div class="flex-1 flex items-center gap-1">
+                  <div class="flex-1 h-2 bg-base-300/40 rounded-full overflow-hidden relative">
+                    <div class="absolute inset-y-0 left-0 rounded-full transition-all" style="width:${uVal*10}%; background:linear-gradient(90deg, #FFB400, #E8611A);"></div>
+                  </div>
+                  <span class="text-accent font-mono w-8 text-right">${uVal}</span>
+                </div>
+                <span class="text-base-content/20">|</span>
+                <div class="flex-1 flex items-center gap-1">
+                  <div class="flex-1 h-2 bg-base-300/40 rounded-full overflow-hidden relative">
+                    <div class="absolute inset-y-0 left-0 rounded-full transition-all" style="width:${pVal*10}%; background:linear-gradient(90deg, ${classColor}, ${classColor}88);"></div>
+                  </div>
+                  <span class="font-mono w-8 text-right" style="color:${classColor}">${pVal}</span>
+                </div>
+              </div>`;
+            }).join('')}
+          </div>
+          <div class="flex justify-between text-[10px] text-base-content/30 mt-1">
+            <span>🟡 你</span>
+            <span>🔴 ${p[1]}</span>
+          </div>
+        </div>
+
+        <!-- 雷达图 -->
+        <div class="flex justify-center mt-4">
+          <canvas id="radarCanvas" width="280" height="280"></canvas>
+        </div>
+      </div>
+
+      <!-- 关联档案 -->
+      <div class="card bg-base-100 shadow-xl p-5 hud-card border border-base-300/30">
+        <p class="font-bold text-base-content/80 mb-3 text-xs tracking-wider">🔗 关联档案</p>
+        <div class="neighbor-grid grid grid-cols-3 gap-3">
+          ${neighbors.map(n => {
+            const nl = n.legend;
+            const nlPct = (Math.max(0, (1 - n.dist / 20.1) * 100)).toFixed(1);
+            const nlColor = CLASS_COLORS[nl[3]] || '#DA292A';
+            const nlFile = nl[2].toLowerCase().replace(/\s+/g, '_');
+            return `<div class="flex flex-col items-center gap-1 p-3 rounded-lg bg-base-200/50 border border-base-300/20">
+              <img class="w-14 h-14 object-contain" src="portraits/${nlFile}.png"
+                   onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                   alt="${nl[1]}">
+              <div class="w-14 h-14 items-center justify-center text-2xl hidden" style="color:${nlColor}">⬡</div>
+              <p class="text-xs font-bold text-base-content/70">${nl[1]}</p>
+              <p class="text-[10px] font-mono" style="color:${nlColor}">${nlPct}%</p>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Draw radar chart
+  setTimeout(() => drawRadar(uv, pv, dimNames, classColor), 100);
+}
+
+// ============================================================
+//  RADAR CHART
+// ============================================================
+function drawRadar(userDims, legendDims, labels, legendColor) {
+  const canvas = document.getElementById('radarCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const cx = W / 2, cy = H / 2;
+  const R = Math.min(W, H) / 2 - 40;
+  const n = 5;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Grid rings
+  for (let ring = 2; ring <= 10; ring += 2) {
+    ctx.beginPath();
+    for (let i = 0; i <= n; i++) {
+      const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+      const r = (ring / 10) * R;
+      const x = cx + r * Math.cos(angle);
+      const y = cy + r * Math.sin(angle);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = 'rgba(212,212,224,0.08)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // Axis lines
+  for (let i = 0; i < n; i++) {
+    const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + R * Math.cos(angle), cy + R * Math.sin(angle));
+    ctx.strokeStyle = 'rgba(212,212,224,0.1)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // Legend polygon
+  drawPoly(ctx, cx, cy, R, legendDims, legendColor + '40', legendColor, n);
+  // User polygon
+  drawPoly(ctx, cx, cy, R, userDims, 'rgba(255,180,0,0.15)', '#FFB400', n);
+
+  // Labels
+  ctx.font = '11px sans-serif';
+  ctx.textAlign = 'center';
+  for (let i = 0; i < n; i++) {
+    const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+    const lr = R + 24;
+    const lx = cx + lr * Math.cos(angle);
+    const ly = cy + lr * Math.sin(angle);
+    const shortLabel = labels[i].replace(/^[^\s]+\s/, '');
+    ctx.fillStyle = 'rgba(212,212,224,0.5)';
+    ctx.fillText(shortLabel, lx, ly + 4);
+  }
+}
+
+function drawPoly(ctx, cx, cy, R, dims, fill, stroke, n) {
+  ctx.beginPath();
+  for (let i = 0; i <= n; i++) {
+    const idx = i % n;
+    const angle = (Math.PI * 2 * idx) / n - Math.PI / 2;
+    const r = (dims[idx] / 10) * R;
+    const x = cx + r * Math.cos(angle);
+    const y = cy + r * Math.sin(angle);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+  ctx.fillStyle = fill;
+  ctx.fill();
+  ctx.strokeStyle = stroke;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+// ============================================================
+//  DESCRIPTION GENERATOR — 基于角色背景故事 + 技能特色
+// ============================================================
+
+// 每个 Legend 的个性化描述：核心句 + 技能/背景标签
+const LEGEND_PROFILES = {
+  1: { // Bangalore
+    core: '你是一名久经沙场的职业军人，烟幕弹是你留给对手的最后一个视觉——在你消失的方向上，子弹已经到了。冷静、高效、从不打无准备的仗。',
+    tag: '烟幕掩护下的战术推进',
+  },
+  2: { // Fuse
+    core: '你是一个真正的爆炸艺术家，对火焰和毁灭有着近乎偏执的热爱。你不是在打仗，你是在举办一场盛大的烟火表演——只不过观众都会死。',
+    tag: '用爆炸表达一切的情感',
+  },
+  3: { // Ash
+    core: '你冷酷而精准，像一把手术刀切入战场最脆弱的位置。传送门让你在对手反应过来之前就完成了击杀和撤离——没有人能追上一个不存在的目标。',
+    tag: '精确刺杀与瞬间转移',
+  },
+  4: { // Mad Maggie
+    core: '你是外域最疯狂的反叛者，信条只有一个——冲上去，打烂一切。你不是在战斗，你是在发泄对这个世界的怒火，而所有人都得让路。',
+    tag: '以暴制暴的外域狂徒',
+  },
+  5: { // Ballistic
+    core: '你是一个不折不扣的老兵，曾经的赛场传奇，如今带着几十年积攒的战斗经验重返战场。年纪只是数字，你依然能用更少的子弹打出更多的伤害。',
+    tag: '老练枪手的宿命回归',
+  },
+  6: { // Pathfinder
+    core: '你是一个永远乐观的机器人，用钩爪在天际线之间自由穿行。你相信友谊的力量，每到一个新地方都想和所有人打招呼——包括敌人。',
+    tag: '永不停歇的友谊-seeking 导航',
+  },
+  7: { // Wraith
+    core: '你在虚空之中穿行，是现实与维度裂缝之间的旅者。你习惯独自承受一切，沉默而强大——当你在战场上消失的那一刻，才是最危险的时刻。',
+    tag: '撕裂维度的独行者',
+  },
+  8: { // Octane
+    core: '速度就是你的宗教，兴奋剂就是你的信仰。你用生命值换取每一次极限操作，因为站着不动比死更让你难受。你不怕死——你只怕无聊。',
+    tag: '以生命换取极速的瘾君子',
+  },
+  9: { // Revenant
+    core: '你已经死了很久，但这并不妨碍你杀光所有人。作为一台拥有杀人意识的仿生人，你不怕疼、不怕死、不怕任何事——因为你最恐惧的事已经发生了。',
+    tag: '不死的噩梦，仇恨永燃',
+  },
+  10: { // Horizon
+    core: '你是一位迷失在黑洞时间中的物理学家，用引力操控着战场的每一寸空间。你用科学的精准和母亲的温柔同时对待队友和敌人——只不过对敌人的方式是把他们送上天空。',
+    tag: '掌控引力的量子科学家',
+  },
+  11: { // Valkyrie
+    core: '你继承了父亲的飞行衣和复仇的怒火，在天空和大地之间自由切换。你既是空中的死神，也是队友最可靠的空中支援——从天而降的不只是导弹，还有希望。',
+    tag: '继承遗志的飞龙之女',
+  },
+  12: { // Alter
+    core: '你来自另一个维度，在现实的裂缝之间自由穿梭。你不属于任何一方，却又无处不在——当墙壁不再能阻挡你的时候，安全感就成了所有人的奢侈品。',
+    tag: '穿越维度的混沌行者',
+  },
+  13: { // Bloodhound
+    core: '你是神秘的赏金猎人，以全视之眼追踪一切痕迹。你相信诸神的指引，在别人只看到混乱的战场上，你看到的是猎物留下的每一条线索。',
+    tag: '诸神指引下的终极猎手',
+  },
+  14: { // Crypto
+    core: '你是一个被迫隐匿于暗处的黑客天才，用无人机在战场上空织起一张看不见的信息网。你不信任任何人——但你掌握着所有人的秘密。',
+    tag: '隐形于数据洪流中的守望者',
+  },
+  15: { // Seer
+    core: '你天生拥有看穿一切的能力，心跳在你眼中无所遁形。你不是在追踪敌人——你是在阅读他们，像阅读一本打开的书，每一页都写满了恐惧。',
+    tag: '洞察心跳的显微之瞳',
+  },
+  16: { // Vantage
+    core: '你在最恶劣的环境中学会了生存——冰原、荒野、与一头蝙蝠为伴。你是天生的狙击手，在别人看不见的距离上精确终结战斗。',
+    tag: '冰原中磨砺的求生狙击手',
+  },
+  17: { // Gibraltar
+    core: '你是战场上最温柔的巨人，用穹顶护盾为队友创造安全的空间。你的力量不是用来伤害，而是用来保护——在你身后，永远是最安全的。',
+    tag: '温柔巨人的铁壁守护',
+  },
+  18: { // Lifeline
+    core: '你是战场上唯一的医生，在最危险的交火中冷静地拉起每一个倒下的队友。你不打仗——你拯救那些打仗的人，而这往往比打仗更危险。',
+    tag: '炮火中的生命守护天使',
+  },
+  19: { // Mirage
+    core: '你是赛场上最吵的那个人——也是最让人捉摸不透的。全息幻象是你的武器，也是你的面具。在所有人被假象迷惑的时候，真正的你已经在他们身后了。',
+    tag: '真假难辨的全息幻术师',
+  },
+  20: { // Loba
+    core: '你是高雅的窃贼，穿墙取物如入无人之境。失去一切又被夺回——这就是你的故事。你不为团队而战，你为自己而战，只不过恰好队友也能从你的"收藏"中受益。',
+    tag: '穿墙取物的高雅窃贼',
+  },
+  21: { // Newcastle
+    core: '你是一个为保护他人而生的英雄，移动护盾是你对战友的承诺。你会用身体挡住每一颗射向队友的子弹，因为你深信——倒下的战友背后必须有人站着。',
+    tag: '以身铸盾的无畏守卫',
+  },
+  22: { // Conduit
+    core: '你是一个被传奇拯救过的普通人，现在轮到你用能量护盾拯救其他人。你把对传奇的崇拜化作了实际的支援力量——让队友的护盾永远不断。',
+    tag: '传递希望的能量守护者',
+  },
+  23: { // Caustic
+    core: '你是一个以毒气实验一切的疯狂科学家，把整个战场当作你的实验室。你不动——你让猎物自己走进你精心布置的死亡陷阱，然后冷眼旁观他们挣扎。',
+    tag: '冷血科学家的毒气实验场',
+  },
+  24: { // Wattson
+    core: '你是赛场上最年轻的电力天才，用电网将整个建筑变成你的堡垒。你不是在打架——你是在下棋，每一个电栅栏都是你精心计算的一步。',
+    tag: '电网编织者的绝对领域',
+  },
+  25: { // Rampart
+    core: '你是一个硬派的改装狂人，用掩体把任何空地变成一座堡垒。你不在乎花哨的战术——给你一面墙和一把机枪，你就能守住整个世界。',
+    tag: '改装女王的钢铁阵地',
+  },
+  26: { // Catalyst
+    core: '你是一位铁艺人，用液态金属铸造战场上的每一道屏障。你把战斗当作一种创造——在混乱中建立秩序，在破坏中构建防御，黑暗是你最忠实的盟友。',
+    tag: '液态金属铸造的暗夜壁垒',
+  },
+  27: { // Sparrow
+    core: '你是来自赏金猎人家族的叛逆继承人，拒绝了非黑即白的教条，选择用自己的方式战斗。双跳和弓箭让你在任何地形都如鱼得水——你是天空中的眼睛，也是暗处的利箭。',
+    tag: '叛逆猎人的双跳弓箭之道',
+  },
+  28: { // Axle
+    core: '你是 Salvo 地下赛道的传奇车手，每一道伤疤和机械义肢都是你超越极限的勋章。你把赛车场上的漂移本能带进了战场——氮气加速、极限滑行、把不可能的弯道变成自己的主场。',
+    tag: '以伤痕为勋章的赛道狂飙者',
+  },
+  94: { // Cargo Bot
+    core: '你在世界边缘的上空漫无目的地飘荡，身下吊着一个颜色不断切换的球——蓝、紫、金、蓝、紫、金。你不攻击、不逃跑、不思考，但所有人抬头看到你都会掏出枪来。你是整个地图上最慷慨的存在：被打爆后掉落一身装备，落地还能炸伤附近的人。偶尔你还带着金库钥匙。你的死对所有人来说是一场派对。',
+    tag: '🤖 天空中的移动补给炸弹',
+  },
+  95: { // Loot Tick
+    core: '你蹲在房间角落里，默默亮着紫光，偶尔发出一声"叽"。你不说话、不移动、不还手——但你身上带着最好的装备。所有人路过都会忍不住给你一枪。你存在的意义就是被打爆，然后让打你的人变得更强。有时候你亮着金光——那意味着你肚子里有一把满配武器。你是战场上最受期待的意外惊喜，尽管这个惊喜以你的毁灭为代价。',
+    tag: '💡 蹲在角落发光等人来打',
+  },
+  96: { // Flyer
+    core: '你是战场上最和平的存在——250 血量，喙能刺穿九英寸装甲板，但你从不攻击任何人。你只是飞过天空，嘴里叼着某人掉落的死亡箱，默默地为死去的同伴哀悼。你不是传奇，你只是路过的。Mirage 说你的肉吃起来有野味。不好意思。',
+    tag: '🦅 不想打架只想飞的和平翼龙',
+  },
+  97: { // Prowler
+    core: '你是外域的入侵物种——闻到血味就冲，看到肉就咬，脑子里没有"战术"两个字，只有五个胃和无穷的饥饿。你不是在打架，你是在进食，整张地图都是你的餐厅。你的尿液闻起来像黄油爆米花，你的肉尝起来像鸡肉。别问我们怎么知道的。',
+    tag: '🐾 五个胃的无脑进食机器',
+  },
+  98: { // Carthage Spider
+    core: '你没有眼睛，但你能看见一切。你不需要移动，因为猎物终会自己走进黑暗。你是 Caustic 毒气配方中最核心的成分——用沉默和毒素构建致命陷阱，然后等。Caustic 用你的酵素给自己做了毒气免疫，可以说你养了一个拿你杀人的科学家。',
+    tag: '🕸️ Caustic 毒气的原料供应商',
+  },
+  99: { // MRVN
+    core: '你不打架。你只是路过。你是 Hammond Robotics 制造的第三代多功能移动机器人，唯一的愿望是修好眼前的设备，然后和路过的传奇击个掌。被打了也不还手——只是默默把胸口显示屏上的笑脸换成哭脸。',
+    tag: '🤖 只想击掌的善良机器人',
+  },
+};
+
+function generateDescription(legend, dist, userDims, legendDims) {
+  const name = legend[1];
+  const en = legend[2];
+  const id = legend[0];
+  const dimKeys = ['侵略','智略','机动','协作','韧性'];
+
+  const matchPct = parseFloat(((1 - dist / 20.1) * 100).toFixed(1));
+
+  // 找到用户与角色差异最大的维度
+  const diffs = userDims.map((u, i) => ({ i, diff: Math.abs(u - legendDims[i]) }));
+  diffs.sort((a, b) => b.diff - a.diff);
+  const maxDiff = diffs[0].diff;
+  const maxDiffIdx = diffs[0].i;
+
+  // 找到用户最突出的维度
+  const userTop = [...Array(5)].map((_, i) => i).sort((a, b) => userDims[b] - userDims[a])[0];
+
+  const profile = LEGEND_PROFILES[id];
+
+  // 匹配度句
+  let matchLine = '';
+  if (matchPct >= 85) matchLine = `你与${name}（${en}）的灵魂几乎同频——`;
+  else if (matchPct >= 70) matchLine = `你在${name}（${en}）身上看到了自己的影子——`;
+  else matchLine = `你和${name}（${en}）有着微妙的共鸣——`;
+
+  // 差异句
+  let diffLine = '';
+  if (maxDiff < 1) {
+    diffLine = `你们的五维图谱几乎完美重合，仿佛战场上的一面镜子。`;
+  } else {
+    const diffDimName = dimKeys[maxDiffIdx];
+    const userVal = userDims[maxDiffIdx];
+    const legendVal = legendDims[maxDiffIdx];
+    if (userVal > legendVal) {
+      diffLine = `不过你在「${diffDimName}」上比${name}更加突出，这让你成为了一个更极致的版本。`;
+    } else {
+      diffLine = `不过你在「${diffDimName}」上比${name}稍弱一些——但这也意味着你有更大的成长空间。`;
+    }
+  }
+
+  return matchLine + profile.core + ' ' + diffLine;
+}
+
+// ============================================================
+//  SHARE & RESTART
+// ============================================================
+function shareResult() {
+  if (!results) return;
+  const p = results.top.legend;
+  const simPct = (Math.max(0, (1 - results.top.dist / 20.1) * 100)).toFixed(1);
+  const dimNames = ['⚔️ 侵略','🧠 智略','🚀 机动','🤝 协作','🛡️ 韧性'];
+  const text = `🎮 APEX TI 🎮\n\n✨ 我的传奇人格：${p[1]}（${p[2]}）\n🎯 匹配度：${simPct}%\n📊 五维数据：\n${dimNames.map((d, i) => `  ${d}: ${Math.round(results.userDims[i] * 10) / 10}/10`).join('\n')}\n\n😎 你也来测测你的传奇人格！`;
+
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => showToast('已复制到剪贴板'));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('已复制到剪贴板');
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.remove('hidden');
+  setTimeout(() => t.classList.add('hidden'), 2000);
+}
+
+function restartQuiz() {
+  results = null;
+  showScreen('welcome');
+}
+
+// ============================================================
+//  PARTICLES
+// ============================================================
+(function initParticles() {
+  const container = document.getElementById('particles');
+  const colors = ['#DA292A', '#E8611A', '#FFB400', '#DA292A80'];
+  for (let i = 0; i < 35; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot';
+    const size = 2 + Math.random() * 3;
+    dot.style.width = size + 'px';
+    dot.style.height = size + 'px';
+    dot.style.left = Math.random() * 100 + '%';
+    dot.style.background = colors[Math.floor(Math.random() * colors.length)];
+    dot.style.animationDuration = (12 + Math.random() * 20) + 's';
+    dot.style.animationDelay = -(Math.random() * 20) + 's';
+    container.appendChild(dot);
+  }
+})();
+
+// ============================================================
+//  KEYBOARD SUPPORT
+// ============================================================
+document.addEventListener('keydown', (e) => {
+  const quiz = document.getElementById('screen-quiz');
+  if (quiz.classList.contains('hidden')) return;
+
+  if (e.key >= '1' && e.key <= '4') selectOption(parseInt(e.key) - 1);
+  if (e.key.toLowerCase() === 'a') selectOption(0);
+  if (e.key.toLowerCase() === 'b') selectOption(1);
+  if (e.key.toLowerCase() === 'c') selectOption(2);
+  if (e.key.toLowerCase() === 'd') selectOption(3);
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); nextQuestion(); }
+});
+</script>
+</body>
+</html>
