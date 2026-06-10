@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN"data-theme="apex">
+<html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="theme-color"content="#0a0a15">
@@ -9,7 +9,6 @@
 <meta name="viewport"content="width=device-width, initial-scale=1.0">
 <title>APEX — 测试你的传奇人格</title>
 
-<link href="vendor/daisyui.min.css"rel="stylesheet"type="text/css"/>
 <script src="vendor/tailwind.js"></script>
 <script>
 tailwind.config = {
@@ -58,37 +57,6 @@ tailwind.config = {
         },
       }
     }
-  },
-  daisyui: {
-    themes: [{
-      apex: {
-        "primary": "#DA292A",
-        "primary-content": "#ffffff",
-        "secondary": "#E8611A",
-        "secondary-content": "#ffffff",
-        "accent": "#FFB400",
-        "accent-content": "#1a1a1a",
-        "neutral": "#1C1C2E",
-        "neutral-content": "#E0E0E0",
-        "base-100": "#151525",
-        "base-200": "#1E1E35",
-        "base-300": "#2A2A45",
-        "base-content": "#D4D4E0",
-        "info": "#00D4AA",
-        "success": "#43B581",
-        "warning": "#FFB400",
-        "error": "#DA292A",
-        "--rounded-box": "0.75rem",
-        "--rounded-btn": "0.5rem",
-        "--rounded-badge": "1.5rem",
-        "--animation-btn": "0.2s",
-        "--animation-input": "0.15s",
-        "--btn-focus-scale": "0.97",
-        "--border-btn": "1px",
-        "--tab-border": "1px",
-        "--tab-radius": "0.5rem",
-      }
-    }],
   },
 }
 </script>
@@ -246,9 +214,9 @@ tailwind.config = {
     filter: saturate(1.15) contrast(1.12);
   }
 
-  #screen-welcome { --concept-art: url("参考/开始.png"); }
-  #screen-quiz { --concept-art: url("参考/答题中.png"); }
-  #screen-result { --concept-art: url("参考/结果.png"); }
+  #screen-welcome,
+  #screen-quiz,
+  #screen-result { --concept-art: none; }
 
   .hud-shell {
     position: relative;
@@ -357,8 +325,8 @@ tailwind.config = {
     inset: 0;
     background: linear-gradient(180deg, #ff251e 0%, #ff4b25 48%, #ffd36b 100%);
     filter: drop-shadow(0 0 18px rgba(255, 43, 34, .58)) drop-shadow(0 0 28px rgba(255, 157, 48, .28));
-    -webkit-mask: url("assets/apex-emblem.png") left center / auto 100% no-repeat;
-    mask: url("assets/apex-emblem.png") left center / auto 100% no-repeat;
+    -webkit-mask: url("assets/apex-emblem.webp") left center / auto 100% no-repeat;
+    mask: url("assets/apex-emblem.webp") left center / auto 100% no-repeat;
   }
 
   .apex-emblem-img {
@@ -687,24 +655,6 @@ tailwind.config = {
     align-items: center;
     gap: 24px;
     margin-top: 38px;
-  }
-
-  .shortcut-hint {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    color: rgba(218, 207, 192, .42);
-    font-size: 1rem;
-    letter-spacing: .08em;
-  }
-
-  .shortcut-hint::before {
-    content: "";
-    width: 38px;
-    height: 22px;
-    border: 2px solid var(--apex-red);
-    border-radius: 3px;
-    box-shadow: inset 0 0 0 3px rgba(255, 43, 34, .08);
   }
 
   .result-hud {
@@ -1256,7 +1206,6 @@ tailwind.config = {
     .option-key { width: 50px; height: 50px; font-size: 1.78rem; }
     .option-copy { font-size: 1rem; line-height: 1.45; }
     .quiz-foot { grid-template-columns: 1fr; margin-top: 24px; }
-    .shortcut-hint { font-size: .82rem; }
     .hud-action--compact { min-width: 0; min-height: 66px; font-size: 1.46rem; }
 
     .result-hud { padding: 24px 14px 30px; }
@@ -1339,7 +1288,7 @@ tailwind.config = {
 
       <!-- Apex 标志 -->
       <div class="apex-emblem"aria-hidden="true">
-        <img class="apex-emblem-img"src="assets/apex-emblem.png"alt="">
+        <img class="apex-emblem-img"src="assets/apex-emblem.webp"alt="">
       </div>
       <div class="hud-divider"aria-hidden="true"><span class="hud-notch"></span></div>
       <p class="apex-subtitle">测试你的传奇人格</p>
@@ -1385,7 +1334,7 @@ tailwind.config = {
 
       <!-- 下一题按钮 -->
       <div class="quiz-foot">
-        <div class="shortcut-hint">快捷键：A/B/C/D 或 1-4 选择 · Enter / 空格 进入下一题</div>
+        <!-- <div class="shortcut-hint">快捷键：A/B/C/D 或 1-4 选择 · Enter / 空格 进入下一题</div> -->
         <button class="hud-action hud-action--compact is-disabled"id="nextBtn"onclick="nextQuestion()">
           下一题 →
         </button>
@@ -1877,7 +1826,7 @@ function renderResult() {
       <!-- 传奇画像 -->
       <div class="result-hero">
         <div class="portrait-orbit"style="--role-color:${classColor};">
-          <img src="portraits/${portraitFile}.png"onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';"alt="${p[1]}">
+          <img src="portraits/${portraitFile}.webp"onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';"alt="${p[1]}">
           <div class="portrait-fallback">◇</div>
         </div>
         <div class="result-identity">
@@ -1944,7 +1893,7 @@ function renderResult() {
             const nlFile = nl[2].toLowerCase().replace(/\s+/g, '_');
             return `<article class="related-card"style="--role-color:${nlColor};">
               <div class="related-rank">${idx + 2}</div>
-              <img src="portraits/${nlFile}.png"onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"alt="${nl[1]}">
+              <img src="portraits/${nlFile}.webp"onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"alt="${nl[1]}">
               <div class="related-fallback">◇</div>
               <div class="related-copy">
                 <h3>${nl[1]}</h3>
