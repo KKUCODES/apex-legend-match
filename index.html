@@ -9,6 +9,7 @@
 <meta name="viewport"content="width=device-width, initial-scale=1.0">
 <title>APEX — 测试你的传奇人格</title>
 
+<script data-goatcounter="https://apex-legend-match.goatcounter.com/count"async src="https://gc.zgo.at/count.js"></script>
 <script src="vendor/tailwind.js"></script>
 <script>
 tailwind.config = {
@@ -2211,8 +2212,8 @@ function shareResult() {
   if (!results) return;
   const p = results.top.legend;
   const simPct = (Math.max(0, (1 - results.top.dist / 20.1) * 100)).toFixed(1);
-  const dimNames = ['侵略','智略','机动','协作','韧性'];
-  const text = `APEX\n\n我的传奇人格：${p[1]}（${p[2]}）\n匹配度：${simPct}%\n五维数据：\n${dimNames.map((d, i) => `  ${d}: ${Math.round(results.userDims[i] * 10) / 10}/10`).join('\n')}\n\n你也来测测你的传奇人格！`;
+  const shareUrl = window.location.href;
+  const text = `APEX\n\n我的传奇人格：${p[1]}（${p[2]}）\n匹配度：${simPct}%\n\n你也来测测你的传奇人格：\n${shareUrl}`;
 
   if (navigator.clipboard) {
     navigator.clipboard.writeText(text).then(() => showToast('已复制到剪贴板'));
