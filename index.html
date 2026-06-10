@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="apex">
+<html lang="zh-CN"data-theme="apex">
 <head>
 <meta charset="UTF-8">
-<meta name="theme-color" content="#0a0a15">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="description" content="APEX - 测试你的 Apex 英雄人格">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color"content="#0a0a15">
+<meta name="apple-mobile-web-app-capable"content="yes">
+<meta name="apple-mobile-web-app-status-bar-style"content="black-translucent">
+<meta name="description"content="APEX - 测试你的 Apex 英雄人格">
+<meta name="viewport"content="width=device-width, initial-scale=1.0">
 <title>APEX — 测试你的传奇人格</title>
 
-<link href="vendor/daisyui.min.css" rel="stylesheet" type="text/css" />
+<link href="vendor/daisyui.min.css"rel="stylesheet"type="text/css"/>
 <script src="vendor/tailwind.js"></script>
 <script>
 tailwind.config = {
@@ -29,32 +29,32 @@ tailwind.config = {
       },
       keyframes: {
         float: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-6px)' },
+          '0%, 100%': { transform: 'translateY(0)'},
+          '50%': { transform: 'translateY(-6px)'},
         },
         fadeIn: {
-          from: { opacity: '0', transform: 'translateY(12px)' },
-          to: { opacity: '1', transform: 'translateY(0)' },
+          from: { opacity: '0', transform: 'translateY(12px)'},
+          to: { opacity: '1', transform: 'translateY(0)'},
         },
         slideUp: {
-          from: { opacity: '0', transform: 'translateY(24px)' },
-          to: { opacity: '1', transform: 'translateY(0)' },
+          from: { opacity: '0', transform: 'translateY(24px)'},
+          to: { opacity: '1', transform: 'translateY(0)'},
         },
         pulseGlow: {
-          '0%, 100%': { boxShadow: '0 0 12px rgba(218,41,42,.3)' },
-          '50%': { boxShadow: '0 0 28px rgba(218,41,42,.6)' },
+          '0%, 100%': { boxShadow: '0 0 12px rgba(218,41,42,.3)'},
+          '50%': { boxShadow: '0 0 28px rgba(218,41,42,.6)'},
         },
         scanline: {
-          '0%': { top: '-10%' },
-          '100%': { top: '110%' },
+          '0%': { top: '-10%'},
+          '100%': { top: '110%'},
         },
         hudFlicker: {
-          '0%, 100%': { opacity: '1' },
-          '92%': { opacity: '1' },
-          '93%': { opacity: '.7' },
-          '94%': { opacity: '1' },
-          '96%': { opacity: '.8' },
-          '97%': { opacity: '1' },
+          '0%, 100%': { opacity: '1'},
+          '92%': { opacity: '1'},
+          '93%': { opacity: '.7'},
+          '94%': { opacity: '1'},
+          '96%': { opacity: '.8'},
+          '97%': { opacity: '1'},
         },
       }
     }
@@ -1328,20 +1328,20 @@ tailwind.config = {
 <body>
 
 <!-- 粒子背景 -->
-<div class="particle-bg" id="particles"></div>
+<div class="particle-bg"id="particles"></div>
 
 <!-- ==================== 主容器 ==================== -->
 <div id="app">
 
   <!-- ====== 欢迎页 ====== -->
-  <div class="screen" id="screen-welcome">
+  <div class="screen"id="screen-welcome">
     <section class="hud-shell welcome-hud">
 
       <!-- Apex 标志 -->
-      <div class="apex-emblem" aria-hidden="true">
-        <img class="apex-emblem-img" src="assets/apex-emblem.png" alt="">
+      <div class="apex-emblem"aria-hidden="true">
+        <img class="apex-emblem-img"src="assets/apex-emblem.png"alt="">
       </div>
-      <div class="hud-divider" aria-hidden="true"><span class="hud-notch"></span></div>
+      <div class="hud-divider"aria-hidden="true"><span class="hud-notch"></span></div>
       <p class="apex-subtitle">测试你的传奇人格</p>
 
       <!-- 信息条 -->
@@ -1352,7 +1352,7 @@ tailwind.config = {
       </div>
 
       <!-- 按钮 -->
-      <button class="hud-action" onclick="startQuiz()">
+      <button class="hud-action"onclick="startQuiz()">
         进入赛场
       </button>
       <p class="welcome-footnote">开始测试，匹配最适合你的传奇战术人格</p>
@@ -1360,7 +1360,7 @@ tailwind.config = {
   </div>
 
   <!-- ====== 答题页 ====== -->
-  <div class="screen hidden" id="screen-quiz">
+  <div class="screen hidden"id="screen-quiz">
     <section class="hud-shell quiz-hud">
 
       <!-- 进度条 + 菱形标记 -->
@@ -1370,8 +1370,8 @@ tailwind.config = {
           <span id="qPercent">0%</span>
         </div>
         <div class="progress-track">
-          <progress value="0" max="30" id="progressFill"></progress>
-          <div id="diamondWrapper" style="left: 0%;">
+          <progress value="0"max="30"id="progressFill"></progress>
+          <div id="diamondWrapper"style="left: 0%;">
             <div class="diamond-marker"></div>
           </div>
         </div>
@@ -1379,14 +1379,14 @@ tailwind.config = {
 
       <!-- 题目 -->
       <div>
-        <p class="question-text" id="questionText"></p>
-        <div class="option-stack" id="optionsContainer"></div>
+        <p class="question-text"id="questionText"></p>
+        <div class="option-stack"id="optionsContainer"></div>
       </div>
 
       <!-- 下一题按钮 -->
       <div class="quiz-foot">
         <div class="shortcut-hint">快捷键：A/B/C/D 或 1-4 选择 · Enter / 空格 进入下一题</div>
-        <button class="hud-action hud-action--compact is-disabled" id="nextBtn" onclick="nextQuestion()">
+        <button class="hud-action hud-action--compact is-disabled"id="nextBtn"onclick="nextQuestion()">
           下一题 →
         </button>
       </div>
@@ -1394,7 +1394,7 @@ tailwind.config = {
   </div>
 
   <!-- ====== 结果页 ====== -->
-  <div class="screen hidden" id="screen-result">
+  <div class="screen hidden"id="screen-result">
     <div id="resultContent"></div>
   </div>
 
@@ -1402,7 +1402,7 @@ tailwind.config = {
 
 <!-- Toast -->
 <div>
-  <div id="toast" class="hidden fixed bottom-6 left-1/2 z-50 px-6 py-3 text-sm toast-slide">
+  <div id="toast"class="hidden fixed bottom-6 left-1/2 z-50 px-6 py-3 text-sm toast-slide">
     已复制到剪贴板
   </div>
 </div>
@@ -1450,8 +1450,7 @@ const LEGENDS = [
 ];
 
 const CLASS_COLORS = {
-  "突击":"#DA292A","游侠":"#E8611A","侦察":"#00D4AA","支援":"#43B581","控制":"#FFB400","彩蛋":"#7CFC00"
-};
+  "突击":"#DA292A","游侠":"#E8611A","侦察":"#00D4AA","支援":"#43B581","控制":"#FFB400","彩蛋":"#7CFC00"};
 
 // ============================================================
 //  QUIZ QUESTIONS
@@ -1464,55 +1463,55 @@ const QUESTIONS = [
   {
     q: "跳伞飞船即将降落，你选择跳到哪里？",
     opts: [
-      ["🔥 热区 — 落地就是干，活下来的才是传奇", [5,0,0,0,0]],
-      ["⚔️ 附近热门资源点 — 先武装再打", [3,0,0,0,0]],
-      ["👀 中等距离 — 能听到枪声但不必立刻卷入", [1,0,0,0,0]],
-      ["🏔️ 偏远角落 — 安心搜集，苟到决赛圈", [0,0,0,0,0]]
+      ["高级战利品区 — 落地就是干，活下来的才是传奇", [5,0,0,0,0]],
+      ["附近热门资源点 — 先武装再打", [3,0,0,0,0]],
+      ["中等距离 — 能听到枪声但不必立刻卷入", [1,0,0,0,0]],
+      ["偏远角落 — 安心搜集，苟到决赛圈", [0,0,0,0,0]]
     ]
   },
   {
     q: "你刚搜集完装备，远处传来激烈枪声，你的反应是？",
     opts: [
-      ["⚡ 立刻冲过去劝架，第三方才是王道", [5,0,0,0,0]],
-      ["🏹 绕到侧面找角度切入战场", [3,0,0,0,0]],
-      ["🔭 在远处观察等两败俱伤再出手", [1,0,0,0,0]],
-      ["🚶 不关我的事，继续搜集物资", [0,0,0,0,0]]
+      ["立刻冲过去劝架，第三方才是王道", [5,0,0,0,0]],
+      ["绕到侧面找角度切入战场", [3,0,0,0,0]],
+      ["在远处观察等两败俱伤再出手", [1,0,0,0,0]],
+      ["不关我的事，继续搜集物资", [0,0,0,0,0]]
     ]
   },
   {
     q: "决赛圈，你和敌方都躲在掩体后僵持不下，你会？",
     opts: [
-      ["💥 主动推出去 — 谁先动手谁赢", [5,0,0,0,0]],
-      ["🎯 闪身骗枪消耗对方护盾再压", [3,0,0,0,0]],
-      ["⏳ 耐心等对方先犯错误", [1,0,0,0,0]],
-      ["🛡️ 等毒圈逼对方移动再做反应", [0,0,0,0,0]]
+      ["主动推出去 — 谁先动手谁赢", [5,0,0,0,0]],
+      ["闪身骗枪消耗对方护盾再压", [3,0,0,0,0]],
+      ["耐心等对方先犯错误", [1,0,0,0,0]],
+      ["等毒圈逼对方移动再做反应", [0,0,0,0,0]]
     ]
   },
   {
     q: "在军械库里你只能挑一把武器，你选？",
     opts: [
-      ["🔫 R-99 / 和平使者 — 近距离把人融了", [5,0,0,0,0]],
-      ["💥 VK-47 / 平行步枪 — 中距离稳定输出", [3,0,0,0,0]],
-      ["🎯 充能步枪 / 三重击 — 远距离精确打击", [1,0,0,0,0]],
-      ["🤝 无所谓，让队友先选", [0,0,0,0,0]]
+      ["R-99 / 和平使者 — 近距离把人融了", [5,0,0,0,0]],
+      ["VK-47 / 平行步枪 — 中距离稳定输出", [3,0,0,0,0]],
+      ["充能步枪 / 三重击 — 远距离精确打击", [1,0,0,0,0]],
+      ["无所谓，让队友先选", [0,0,0,0,0]]
     ]
   },
   {
     q: "队友在交火中倒地，敌人还在附近，你会？",
     opts: [
-      ["⚔️ 先把对面全灭了再说，死人不会救", [5,0,0,0,0]],
-      ["🔫 一边压制一边找机会拉人", [3,0,0,0,0]],
-      ["🛡️ 扔烟雾弹/护盾先救人", [1,0,0,0,0]],
-      ["🏃 先确保自己安全，活下来才有资格救", [0,0,0,0,0]]
+      ["先把对面全灭了再说，死人不会救", [5,0,0,0,0]],
+      ["一边压制一边找机会拉人", [3,0,0,0,0]],
+      ["扔烟雾弹/护盾先救人", [1,0,0,0,0]],
+      ["先确保自己安全，活下来才有资格救", [0,0,0,0,0]]
     ]
   },
   {
     q: "你在外域酒馆接到一个赏金任务，目标是危险的帮派头目，你的方案是？",
     opts: [
-      ["🚪 正面踢开大门，让对方知道谁来了", [5,0,0,0,0]],
-      ["💣 在入口布好陷阱再引对方出来", [3,0,0,0,0]],
-      ["🕵️ 先跟踪几天摸清规律再动手", [1,0,0,0,0]],
-      ["📞 找几个帮手一起去比较保险", [0,0,0,0,0]]
+      ["正面踢开大门，让对方知道谁来了", [5,0,0,0,0]],
+      ["在入口布好陷阱再引对方出来", [3,0,0,0,0]],
+      ["先跟踪几天摸清规律再动手", [1,0,0,0,0]],
+      ["找几个帮手一起去比较保险", [0,0,0,0,0]]
     ]
   },
 
@@ -1520,55 +1519,55 @@ const QUESTIONS = [
   {
     q: "你发现一个未激活的侦察信标，但激活会暴露你的位置，你？",
     opts: [
-      ["📡 毫不犹豫激活 — 信息优势比隐蔽更重要", [0,5,0,0,0]],
-      ["👀 先观察周围有没有敌人踪迹再决定", [0,3,0,0,0]],
-      ["🤔 让队友去激活，我负责警戒", [0,1,0,0,0]],
-      ["🚶 不值得冒险，绕过去", [0,0,0,0,0]]
+      ["毫不犹豫激活 — 信息优势比隐蔽更重要", [0,5,0,0,0]],
+      ["先观察周围有没有敌人踪迹再决定", [0,3,0,0,0]],
+      ["让队友去激活，我负责警戒", [0,1,0,0,0]],
+      ["不值得冒险，绕过去", [0,0,0,0,0]]
     ]
   },
   {
     q: "下个安全区在地图对面，你有 60 秒，你的策略是？",
     opts: [
-      ["🗺️ 立刻分析地形，规划一条避开交火区的最优路线", [0,5,0,0,0]],
-      ["🏃 沿边缘跑，虽然远但安全", [0,3,0,0,0]],
-      ["✂️ 直接穿中心切割，快但有风险", [0,1,0,0,0]],
-      ["👯 跟着其他小队走，他们选的路一般不会太差", [0,0,0,0,0]]
+      ["立刻分析地形，规划一条避开交火区的最优路线", [0,5,0,0,0]],
+      ["沿边缘跑，虽然远但安全", [0,3,0,0,0]],
+      ["直接穿中心切割，快但有风险", [0,1,0,0,0]],
+      ["跟着其他小队走，他们选的路一般不会太差", [0,0,0,0,0]]
     ]
   },
   {
     q: "背包快满了，你需要丢掉一样东西，你先丢？",
     opts: [
-      ["📊 根据当前装备和队伍需求精确计算优先级", [0,5,0,0,0]],
-      ["💊 丢掉多余的治疗物品，留两三组够用就行", [0,3,0,0,0]],
-      ["🔫 丢掉不常用的弹药类型", [0,1,0,0,0]],
-      ["🤷 随便丢一个，到时候再捡", [0,0,0,0,0]]
+      ["根据当前装备和队伍需求精确计算优先级", [0,5,0,0,0]],
+      ["丢掉多余的治疗物品，留两三组够用就行", [0,3,0,0,0]],
+      ["丢掉不常用的弹药类型", [0,1,0,0,0]],
+      ["随便丢一个，到时候再捡", [0,0,0,0,0]]
     ]
   },
   {
     q: "你发现地上有使用过的医疗箱和散落的弹壳，你的判断是？",
     opts: [
-      ["🔬 根据弹壳类型推断武器、医疗箱用量推断护盾状态、判断对方还剩多少人", [0,5,0,0,0]],
-      ["📝 推断他们大约多久前经过这里，朝哪个方向走的", [0,3,0,0,0]],
-      ["👀 大概知道附近有人就行了", [0,1,0,0,0]],
-      ["🤷 这说明不了什么，继续走自己的路", [0,0,0,0,0]]
+      ["根据弹壳类型推断武器、医疗箱用量推断护盾状态、判断对方还剩多少人", [0,5,0,0,0]],
+      ["推断他们大约多久前经过这里，朝哪个方向走的", [0,3,0,0,0]],
+      ["大概知道附近有人就行了", [0,1,0,0,0]],
+      ["这说明不了什么，继续走自己的路", [0,0,0,0,0]]
     ]
   },
   {
     q: "你需要为小队设计一套技能组合来攻克一个坚固的据点，你优先考虑？",
     opts: [
-      ["🧠 地形分析 + 技能协同 + 进攻时序，制定完整战术", [0,5,0,0,0]],
-      ["📋 列出两三个可行方案让队友选", [0,3,0,0,0]],
-      ["🗣️ 听队友怎么说，大家一起想办法", [0,1,0,0,0]],
-      ["💪 直接冲就完了，计划赶不上变化", [0,0,0,0,0]]
+      ["地形分析 + 技能协同 + 进攻时序，制定完整战术", [0,5,0,0,0]],
+      ["列出两三个可行方案让队友选", [0,3,0,0,0]],
+      ["听队友怎么说，大家一起想办法", [0,1,0,0,0]],
+      ["直接冲就完了，计划赶不上变化", [0,0,0,0,0]]
     ]
   },
   {
     q: "你在 IMC 废弃基地发现一个加密终端，你会？",
     opts: [
-      ["💻 尝试破解，分析加密类型，寻找系统漏洞", [0,5,0,0,0]],
-      ["🔍 在基地里搜索密码线索和日志", [0,3,0,0,0]],
-      ["🚶 找找有没有其他不需要密码的入口", [0,1,0,0,0]],
-      ["🤷 不感兴趣，浪费时间，继续任务", [0,0,0,0,0]]
+      ["尝试破解，分析加密类型，寻找系统漏洞", [0,5,0,0,0]],
+      ["在基地里搜索密码线索和日志", [0,3,0,0,0]],
+      ["找找有没有其他不需要密码的入口", [0,1,0,0,0]],
+      ["不感兴趣，浪费时间，继续任务", [0,0,0,0,0]]
     ]
   },
 
@@ -1576,55 +1575,55 @@ const QUESTIONS = [
   {
     q: "你更倾向于在哪种地形交战？",
     opts: [
-      ["🏗️ 高楼天台 — 制高点意味着一切，垂直打击碾压对手", [0,0,5,0,0]],
-      ["🏔️ 错综复杂的山地 — 高低起伏让我如鱼得水", [0,0,3,0,0]],
-      ["🏠 室内走廊 — 狭窄空间里走位更关键", [0,0,1,0,0]],
-      ["🏜️ 开阔平原 — 不需要花里胡哨的移动，拼枪法就够了", [0,0,0,0,0]]
+      ["高楼天台 — 制高点意味着一切，垂直打击碾压对手", [0,0,5,0,0]],
+      ["错综复杂的山地 — 高低起伏让我如鱼得水", [0,0,3,0,0]],
+      ["室内走廊 — 狭窄空间里走位更关键", [0,0,1,0,0]],
+      ["开阔平原 — 不需要花里胡哨的移动，拼枪法就够了", [0,0,0,0,0]]
     ]
   },
   {
     q: "被三个小队包围，你的脱身首选？",
     opts: [
-      ["🪝 抓钩上天台/气球跳伞 — 从他们头顶离开", [0,0,5,0,0]],
-      ["🏃 滑铲跳冲出一个缺口", [0,0,3,0,0]],
-      ["🛡️ 找掩体慢慢向安全方向转移", [0,0,1,0,0]],
-      ["⚔️ 硬打一条血路出来", [0,0,0,0,0]]
+      ["抓钩上天台/气球跳伞 — 从他们头顶离开", [0,0,5,0,0]],
+      ["滑铲跳冲出一个缺口", [0,0,3,0,0]],
+      ["找掩体慢慢向安全方向转移", [0,0,1,0,0]],
+      ["硬打一条血路出来", [0,0,0,0,0]]
     ]
   },
   {
     q: "在训练营你花最多时间练什么？",
     opts: [
-      ["🏃 身法和走位 — 移动是 Apex 的灵魂", [0,0,5,0,0]],
-      ["🎯 枪法 — 打得准比跑得快重要", [0,0,3,0,0]],
-      ["🧪 技能组合 — 把角色技能练到极致", [0,0,1,0,0]],
-      ["📊 策略分析 — 意识比操作重要", [0,0,0,0,0]]
+      ["身法和走位 — 移动是 Apex 的灵魂", [0,0,5,0,0]],
+      ["枪法 — 打得准比跑得快重要", [0,0,3,0,0]],
+      ["技能组合 — 把角色技能练到极致", [0,0,1,0,0]],
+      ["策略分析 — 意识比操作重要", [0,0,0,0,0]]
     ]
   },
   {
     q: "你需要穿越大半个地图，首选出行方式？",
     opts: [
-      ["🎈 跳伞塔/气球 — 飞过去最快最爽", [0,0,5,0,0]],
-      ["🪝 抓钩/滑索 — 灵活选择路线", [0,0,3,0,0]],
-      ["🏃 沿途搜集步行前进 — 安全稳妥", [0,0,1,0,0]],
-      ["🚶 无所谓，怎么走都行", [0,0,0,0,0]]
+      ["跳伞塔/气球 — 飞过去最快最爽", [0,0,5,0,0]],
+      ["抓钩/滑索 — 灵活选择路线", [0,0,3,0,0]],
+      ["沿途搜集步行前进 — 安全稳妥", [0,0,1,0,0]],
+      ["无所谓，怎么走都行", [0,0,0,0,0]]
     ]
   },
   {
     q: "在碎片东西这种密集建筑区，你的打法是？",
     opts: [
-      ["🏗️ 在各建筑间跳跃穿梭 — 他们追不上我的节奏", [0,0,5,0,0]],
-      ["🏢 占据一栋高楼上下灵活移动", [0,0,3,0,0]],
-      ["🏠 在建筑内部利用房间和走廊周旋", [0,0,1,0,0]],
-      ["🏞️ 不进建筑，在外围远距离打", [0,0,0,0,0]]
+      ["在各建筑间跳跃穿梭 — 他们追不上我的节奏", [0,0,5,0,0]],
+      ["占据一栋高楼上下灵活移动", [0,0,3,0,0]],
+      ["在建筑内部利用房间和走廊周旋", [0,0,1,0,0]],
+      ["不进建筑，在外围远距离打", [0,0,0,0,0]]
     ]
   },
   {
     q: "你看到一条只有极高手速才能通过的捷径，你？",
     opts: [
-      ["🎯 毫不犹豫尝试 — 不试试怎么知道自己不行", [0,0,5,0,0]],
-      ["👀 先观察确认可行性再试", [0,0,3,0,0]],
-      ["🚶 走安全路线，没必要冒险", [0,0,1,0,0]],
-      ["🤷 只有被追的时候才考虑", [0,0,0,0,0]]
+      ["毫不犹豫尝试 — 不试试怎么知道自己不行", [0,0,5,0,0]],
+      ["先观察确认可行性再试", [0,0,3,0,0]],
+      ["走安全路线，没必要冒险", [0,0,1,0,0]],
+      ["只有被追的时候才考虑", [0,0,0,0,0]]
     ]
   },
 
@@ -1632,55 +1631,55 @@ const QUESTIONS = [
   {
     q: "你刚加入一个随机小队，第一件事做什么？",
     opts: [
-      ["📢 主动打招呼，讨论落点和角色分工", [0,0,0,5,0]],
-      ["👍 简单打个招呼，跟随队友节奏", [0,0,0,3,0]],
-      ["👂 等队友开口再回应", [0,0,0,1,0]],
-      ["🤷 不说话，各跳各的", [0,0,0,0,0]]
+      ["主动打招呼，讨论落点和角色分工", [0,0,0,5,0]],
+      ["简单打个招呼，跟随队友节奏", [0,0,0,3,0]],
+      ["等队友开口再回应", [0,0,0,1,0]],
+      ["不说话，各跳各的", [0,0,0,0,0]]
     ]
   },
   {
     q: "你找到一件金甲，但队友的护甲也很差，你会？",
     opts: [
-      ["💛 让给更需要它的队友 — 团队强才是真的强", [0,0,0,5,0]],
-      ["🤔 问队友要不要，他不要我再穿", [0,0,0,3,0]],
-      ["⚖️ 按职业需求分配，突击优先", [0,0,0,1,0]],
-      ["💪 自己穿 — 我更强才能保护队友", [0,0,0,0,0]]
+      ["让给更需要它的队友 — 团队强才是真的强", [0,0,0,5,0]],
+      ["问队友要不要，他不要我再穿", [0,0,0,3,0]],
+      ["按职业需求分配，突击优先", [0,0,0,1,0]],
+      ["自己穿 — 我更强才能保护队友", [0,0,0,0,0]]
     ]
   },
   {
     q: "跳伞阶段，你通常会？",
     opts: [
-      ["🗺️ 主动选择落点并标在地图上，带领队伍", [0,0,0,5,0]],
-      ["🤝 问队友想去哪，尽量达成共识", [0,0,0,3,0]],
-      ["👋 跟随跳伞长的选择", [0,0,0,1,0]],
-      ["🪂 自己跳自己的，不一定非要在一起", [0,0,0,0,0]]
+      ["主动选择落点并标在地图上，带领队伍", [0,0,0,5,0]],
+      ["问队友想去哪，尽量达成共识", [0,0,0,3,0]],
+      ["跟随跳伞长的选择", [0,0,0,1,0]],
+      ["自己跳自己的，不一定非要在一起", [0,0,0,0,0]]
     ]
   },
   {
     q: "队友被敌方腐蚀气体困住无法脱身，你？",
     opts: [
-      ["🚀 立刻冲进去拉他出来，生死与共", [0,0,0,5,0]],
-      ["🔫 在外面火力压制给队友创造脱身机会", [0,0,0,3,0]],
-      ["💡 远程提供信息帮助他找出口", [0,0,0,1,0]],
-      ["🛡️ 先确保自己安全，再想办法", [0,0,0,0,0]]
+      ["立刻冲进去拉他出来，生死与共", [0,0,0,5,0]],
+      ["在外面火力压制给队友创造脱身机会", [0,0,0,3,0]],
+      ["远程提供信息帮助他找出口", [0,0,0,1,0]],
+      ["先确保自己安全，再想办法", [0,0,0,0,0]]
     ]
   },
   {
     q: "毒圈逼近，你有机会独自逃离，但队友被击倒无法移动，你？",
     opts: [
-      ["❤️ 回头救，哪怕自己可能走不掉 — 不抛弃队友", [0,0,0,5,0]],
-      ["⚡ 快速评估 — 如果来得及就救，来不及就保自己", [0,0,0,3,0]],
-      ["📋 先进圈保自己，他有复活卡的话还有机会", [0,0,0,1,0]],
-      ["🏃 毒圈不等人，保自己最重要", [0,0,0,0,0]]
+      ["回头救，哪怕自己可能走不掉 — 不抛弃队友", [0,0,0,5,0]],
+      ["快速评估 — 如果来得及就救，来不及就保自己", [0,0,0,3,0]],
+      ["先进圈保自己，他有复活卡的话还有机会", [0,0,0,1,0]],
+      ["毒圈不等人，保自己最重要", [0,0,0,0,0]]
     ]
   },
   {
     q: "你心目中理想的 Apex 小队关系是？",
     opts: [
-      ["🤝 三人一条心，随时配合 — 队友就是家人", [0,0,0,5,0]],
-      ["📋 各司其职但互相信任 — 专业分工最高效", [0,0,0,3,0]],
-      ["👋 一起玩但各打各的也行", [0,0,0,1,0]],
-      ["🐺 一个人更自由 — 独狼也是一种风格", [0,0,0,0,0]]
+      ["三人一条心，随时配合 — 队友就是家人", [0,0,0,5,0]],
+      ["各司其职但互相信任 — 专业分工最高效", [0,0,0,3,0]],
+      ["一起玩但各打各的也行", [0,0,0,1,0]],
+      ["一个人更自由 — 独狼也是一种风格", [0,0,0,0,0]]
     ]
   },
 
@@ -1688,55 +1687,55 @@ const QUESTIONS = [
   {
     q: "你已经连续三局落地成盒，下一局你？",
     opts: [
-      ["🔥 调整策略继续打 — 失败是传奇的必经之路", [0,0,0,0,5]],
-      ["🔄 换个角色/落点，换个方式再来", [0,0,0,0,3]],
-      ["📺 休息一下看看高手直播学两招", [0,0,0,0,1]],
-      ["🎮 算了，今天状态不好，改天再说", [0,0,0,0,0]]
+      ["调整策略继续打 — 失败是传奇的必经之路", [0,0,0,0,5]],
+      ["换个角色/落点，换个方式再来", [0,0,0,0,3]],
+      ["休息一下看看高手直播学两招", [0,0,0,0,1]],
+      ["算了，今天状态不好，改天再说", [0,0,0,0,0]]
     ]
   },
   {
     q: "队友全倒，你一人面对满编三人小队，残甲无头，你？",
     opts: [
-      ["⚔️ 打 — 哪怕只换掉一个也不亏", [0,0,0,0,5]],
-      ["🎯 找角度逐个击破，一换一是底线", [0,0,0,0,3]],
-      ["🏃 找机会复活队友，翻盘需要人手", [0,0,0,0,1]],
-      ["🛡️ 找掩体保存实力，活着才有输出", [0,0,0,0,0]]
+      ["打 — 哪怕只换掉一个也不亏", [0,0,0,0,5]],
+      ["找角度逐个击破，一换一是底线", [0,0,0,0,3]],
+      ["找机会复活队友，翻盘需要人手", [0,0,0,0,1]],
+      ["找掩体保存实力，活着才有输出", [0,0,0,0,0]]
     ]
   },
   {
     q: "你在冲击猎杀者段位，卡在铂金已经两周了，你？",
     opts: [
-      ["📝 复盘每局录像，精确找到自己的薄弱环节", [0,0,0,0,5]],
-      ["🔄 换一套打法或者换角色突破瓶颈", [0,0,0,0,3]],
-      ["👥 找更强的队友一起上分", [0,0,0,0,1]],
-      ["🎯 先把目标降到钻石，稳扎稳打", [0,0,0,0,0]]
+      ["复盘每局录像，精确找到自己的薄弱环节", [0,0,0,0,5]],
+      ["换一套打法或者换角色突破瓶颈", [0,0,0,0,3]],
+      ["找更强的队友一起上分", [0,0,0,0,1]],
+      ["先把目标降到钻石，稳扎稳打", [0,0,0,0,0]]
     ]
   },
   {
     q: "毒圈正在逼近，你没有任何治疗物品，血量只剩一丝，你？",
     opts: [
-      ["🏃 全力冲进安全区 — 只要还有一口气就能赢", [0,0,0,0,5]],
-      ["📦 边跑边搜集沿途可能的物资", [0,0,0,0,3]],
-      ["🗺️ 绕路去可能有物资的建筑", [0,0,0,0,1]],
-      ["🧘 接受命运，冷静面对可能的结局", [0,0,0,0,0]]
+      ["全力冲进安全区 — 只要还有一口气就能赢", [0,0,0,0,5]],
+      ["边跑边搜集沿途可能的物资", [0,0,0,0,3]],
+      ["绕路去可能有物资的建筑", [0,0,0,0,1]],
+      ["接受命运，冷静面对可能的结局", [0,0,0,0,0]]
     ]
   },
   {
     q: "所有人都说你的打法不可能赢，但你觉得有效，你？",
     opts: [
-      ["🏔️ 坚持自己的打法继续优化 — 用结果证明一切", [0,0,0,0,5]],
-      ["🔧 做些小调整但不改核心思路", [0,0,0,0,3]],
-      ["👂 听取建议尝试改变一下", [0,0,0,0,1]],
-      ["🤷 也许大家说得对，换个方式试试", [0,0,0,0,0]]
+      ["坚持自己的打法继续优化 — 用结果证明一切", [0,0,0,0,5]],
+      ["做些小调整但不改核心思路", [0,0,0,0,3]],
+      ["听取建议尝试改变一下", [0,0,0,0,1]],
+      ["也许大家说得对，换个方式试试", [0,0,0,0,0]]
     ]
   },
   {
     q: "如果你是一名职业 Apex 选手，退役时你希望被记住什么？",
     opts: [
-      ["⚔️ 永不放弃的精神 — 在所有人放弃时依然站着的那个", [0,0,0,0,5]],
-      ["🏔️ 达到了别人认为不可能达到的巅峰", [0,0,0,0,3]],
-      ["🌱 突破自我的过程比结果更重要", [0,0,0,0,1]],
-      ["🎮 享受每一场比赛的快乐和激情", [0,0,0,0,0]]
+      ["永不放弃的精神 — 在所有人放弃时依然站着的那个", [0,0,0,0,5]],
+      ["达到了别人认为不可能达到的巅峰", [0,0,0,0,3]],
+      ["突破自我的过程比结果更重要", [0,0,0,0,1]],
+      ["享受每一场比赛的快乐和激情", [0,0,0,0,0]]
     ]
   }
 ];
@@ -1754,8 +1753,8 @@ let results = null;
 // ============================================================
 function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-  document.getElementById('screen-' + name).classList.remove('hidden');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.getElementById('screen-'+ name).classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth'});
 }
 
 // ============================================================
@@ -1781,7 +1780,7 @@ function renderQuestion() {
   const container = document.getElementById('optionsContainer');
   const labels = ['A', 'B', 'C', 'D'];
   container.innerHTML = q.opts.map((opt, i) => `
-    <button class="option-card" type="button" data-idx="${i}" onclick="selectOption(${i})" aria-pressed="false">
+    <button class="option-card"type="button"data-idx="${i}"onclick="selectOption(${i})"aria-pressed="false">
       <span class="option-key">${labels[i]}</span>
       <span class="option-copy">${opt[0]}</span>
     </button>
@@ -1798,7 +1797,7 @@ function selectOption(idx) {
   selectedIdx = idx;
   document.querySelectorAll('.option-card').forEach((c, i) => {
     c.classList.toggle('is-selected', i === idx);
-    c.setAttribute('aria-pressed', i === idx ? 'true' : 'false');
+    c.setAttribute('aria-pressed', i === idx ? 'true': 'false');
   });
   const btn = document.getElementById('nextBtn');
   btn.classList.remove('is-disabled');
@@ -1853,23 +1852,23 @@ function renderResult() {
 
   const pctNum = parseFloat(matchPct);
   const isEasterEgg = p[0] === 99;
-  const tierLabel = isEasterEgg ? '隐藏档案' : pctNum >= 85 ? '传奇级契合' : pctNum >= 70 ? '战术协同' : pctNum >= 55 ? '同队感应' : '外域路人';
+  const tierLabel = isEasterEgg ? '隐藏档案': pctNum >= 85 ? '传奇级契合': pctNum >= 70 ? '战术协同': pctNum >= 55 ? '同队感应': '外域路人';
 
   const now = new Date();
-  const dateStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+  const dateStr = now.getFullYear() + '-'+ String(now.getMonth()+1).padStart(2,'0') + '-'+ String(now.getDate()).padStart(2,'0');
 
   const portraitFile = p[2].toLowerCase().replace(/\s+/g, '_');
 
   const container = document.getElementById('resultContent');
   container.innerHTML = `
-    <section class="hud-shell result-hud" style="--role-color:${classColor}; --panel-accent:${classColor};">
+    <section class="hud-shell result-hud"style="--role-color:${classColor}; --panel-accent:${classColor};">
       <div class="result-topbar">
-        <button class="icon-button" onclick="restartQuiz()" aria-label="返回">←</button>
+        <button class="icon-button"onclick="restartQuiz()"aria-label="返回">←</button>
         <div class="result-title">
           <strong>检测结果</strong>
           <span>APEX RESULTS</span>
         </div>
-        <button class="history-button" onclick="showToast('历史记录尚未启用')">⊕ 历史记录</button>
+        <button class="history-button"onclick="showToast('历史记录尚未启用')">⊕ 历史记录</button>
       </div>
 
       <!-- 档案抬头 -->
@@ -1877,24 +1876,22 @@ function renderResult() {
 
       <!-- 传奇画像 -->
       <div class="result-hero">
-        <div class="portrait-orbit" style="--role-color:${classColor};">
-          <img src="portraits/${portraitFile}.png"
-               onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';"
-               alt="${p[1]}">
+        <div class="portrait-orbit"style="--role-color:${classColor};">
+          <img src="portraits/${portraitFile}.png"onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';"alt="${p[1]}">
           <div class="portrait-fallback">◇</div>
         </div>
         <div class="result-identity">
           <h2>${p[1]}</h2>
           <p>${p[2]} · ${p[3]}</p>
           <div class="match-row">
-            <div class="match-ring" style="--match:${Math.min(100, pctNum) * 3.6}deg; --role-color:${classColor};"><span class="match-value">${Math.round(pctNum)}<small>%</small></span></div>
+            <div class="match-ring"style="--match:${Math.min(100, pctNum) * 3.6}deg; --role-color:${classColor};"><span class="match-value">${Math.round(pctNum)}<small>%</small></span></div>
             <div class="tier-panel">${tierLabel}</div>
           </div>
         </div>
       </div>
 
       <!-- 战术分析 -->
-      <div class="analysis-box" style="--panel-accent:${classColor};">
+      <div class="analysis-box"style="--panel-accent:${classColor};">
         <p class="panel-title">战术分析</p>
         <div class="analysis-copy">${generateDescription(p, dist, uv, pv)}</div>
         <div class="analysis-watermark"></div>
@@ -1902,7 +1899,7 @@ function renderResult() {
 
       <div class="combat-grid">
         <!-- 五维作战数据 -->
-        <div class="data-panel" style="--panel-accent:var(--apex-red);">
+        <div class="data-panel"style="--panel-accent:var(--apex-red);">
           <p class="panel-title">五维作战数据</p>
           <div class="metric-legend">
             <span style="--legend-color:var(--apex-gold);">用户</span>
@@ -1914,8 +1911,8 @@ function renderResult() {
               return `<div class="metric-row">
                 <span>${d}</span>
                 <div class="metric-bars">
-                  <div class="metric-bar"><div class="metric-fill" style="--value:${uVal*10}%; --bar-color:var(--apex-gold);"></div></div>
-                  <div class="metric-bar"><div class="metric-fill" style="--value:${pVal*10}%; --bar-color:${classColor};"></div></div>
+                  <div class="metric-bar"><div class="metric-fill"style="--value:${uVal*10}%; --bar-color:var(--apex-gold);"></div></div>
+                  <div class="metric-bar"><div class="metric-fill"style="--value:${pVal*10}%; --bar-color:${classColor};"></div></div>
                 </div>
                 <span class="metric-values">
                   <b style="color:var(--apex-gold);">${Math.round(uVal * 10)}</b>
@@ -1927,14 +1924,14 @@ function renderResult() {
         </div>
 
         <!-- 雷达图 -->
-        <div class="data-panel radar-panel" style="--panel-accent:var(--apex-red);">
+        <div class="data-panel radar-panel"style="--panel-accent:var(--apex-red);">
           <p class="panel-title">能力雷达图</p>
-          <canvas id="radarCanvas" width="320" height="320"></canvas>
+          <canvas id="radarCanvas"width="320"height="320"></canvas>
         </div>
       </div>
 
       <!-- 关联档案 -->
-      <div class="related-panel" style="--panel-accent:var(--apex-red);">
+      <div class="related-panel"style="--panel-accent:var(--apex-red);">
         <div class="related-head">
           <p class="panel-title">关联档案</p>
           <span class="related-more">更多匹配 →</span>
@@ -1945,11 +1942,9 @@ function renderResult() {
             const nlPct = (Math.max(0, (1 - n.dist / 20.1) * 100)).toFixed(1);
             const nlColor = CLASS_COLORS[nl[3]] || '#DA292A';
             const nlFile = nl[2].toLowerCase().replace(/\s+/g, '_');
-            return `<article class="related-card" style="--role-color:${nlColor};">
+            return `<article class="related-card"style="--role-color:${nlColor};">
               <div class="related-rank">${idx + 2}</div>
-              <img src="portraits/${nlFile}.png"
-                   onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                   alt="${nl[1]}">
+              <img src="portraits/${nlFile}.png"onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"alt="${nl[1]}">
               <div class="related-fallback">◇</div>
               <div class="related-copy">
                 <h3>${nl[1]}</h3>
@@ -1963,8 +1958,8 @@ function renderResult() {
       </div>
 
       <div class="result-actions">
-        <button class="hud-action" onclick="restartQuiz()">重新检测</button>
-        <button class="hud-action hud-action--ghost" onclick="shareResult()">分享档案</button>
+        <button class="hud-action"onclick="restartQuiz()">重新检测</button>
+        <button class="hud-action hud-action--ghost"onclick="shareResult()">分享档案</button>
       </div>
       <p class="result-footer">APEX · 人格分析系统 · 外域边境</p>
     </section>
@@ -2001,7 +1996,7 @@ function drawRadar(userDims, legendDims, labels, legendColor) {
       i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
     }
     ctx.closePath();
-    ctx.strokeStyle = ring === 10 ? 'rgba(255,212,123,0.22)' : 'rgba(255,212,123,0.12)';
+    ctx.strokeStyle = ring === 10 ? 'rgba(255,212,123,0.22)': 'rgba(255,212,123,0.12)';
     ctx.lineWidth = 1;
     ctx.stroke();
 
@@ -2193,27 +2188,27 @@ const LEGEND_PROFILES = {
   },
   94: { // Cargo Bot
     core: '你在世界边缘的上空漫无目的地飘荡，身下吊着一个颜色不断切换的球——蓝、紫、金、蓝、紫、金。你不攻击、不逃跑、不思考，但所有人抬头看到你都会掏出枪来。你是整个地图上最慷慨的存在：被打爆后掉落一身装备，落地还能炸伤附近的人。偶尔你还带着金库钥匙。你的死对所有人来说是一场派对。',
-    tag: '🤖 天空中的移动补给炸弹',
+    tag: '天空中的移动补给炸弹',
   },
   95: { // Loot Tick
     core: '你蹲在房间角落里，默默亮着紫光，偶尔发出一声"叽"。你不说话、不移动、不还手——但你身上带着最好的装备。所有人路过都会忍不住给你一枪。你存在的意义就是被打爆，然后让打你的人变得更强。有时候你亮着金光——那意味着你肚子里有一把满配武器。你是战场上最受期待的意外惊喜，尽管这个惊喜以你的毁灭为代价。',
-    tag: '💡 蹲在角落发光等人来打',
+    tag: '蹲在角落发光等人来打',
   },
   96: { // Flyer
     core: '你是战场上最和平的存在——250 血量，喙能刺穿九英寸装甲板，但你从不攻击任何人。你只是飞过天空，嘴里叼着某人掉落的死亡箱，默默地为死去的同伴哀悼。你不是传奇，你只是路过的。Mirage 说你的肉吃起来有野味。不好意思。',
-    tag: '🦅 不想打架只想飞的和平翼龙',
+    tag: '不想打架只想飞的和平翼龙',
   },
   97: { // Prowler
     core: '你是外域的入侵物种——闻到血味就冲，看到肉就咬，脑子里没有"战术"两个字，只有五个胃和无穷的饥饿。你不是在打架，你是在进食，整张地图都是你的餐厅。你的尿液闻起来像黄油爆米花，你的肉尝起来像鸡肉。别问我们怎么知道的。',
-    tag: '🐾 五个胃的无脑进食机器',
+    tag: '五个胃的无脑进食机器',
   },
   98: { // Carthage Spider
     core: '你没有眼睛，但你能看见一切。你不需要移动，因为猎物终会自己走进黑暗。你是 Caustic 毒气配方中最核心的成分——用沉默和毒素构建致命陷阱，然后等。Caustic 用你的酵素给自己做了毒气免疫，可以说你养了一个拿你杀人的科学家。',
-    tag: '🕸️ Caustic 毒气的原料供应商',
+    tag: 'Caustic 毒气的原料供应商',
   },
   99: { // MRVN
     core: '你不打架。你只是路过。你是 Hammond Robotics 制造的第三代多功能移动机器人，唯一的愿望是修好眼前的设备，然后和路过的传奇击个掌。被打了也不还手——只是默默把胸口显示屏上的笑脸换成哭脸。',
-    tag: '🤖 只想击掌的善良机器人',
+    tag: '只想击掌的善良机器人',
   },
 };
 
@@ -2257,7 +2252,7 @@ function generateDescription(legend, dist, userDims, legendDims) {
     }
   }
 
-  return matchLine + profile.core + ' ' + diffLine;
+  return matchLine + profile.core + ''+ diffLine;
 }
 
 // ============================================================
@@ -2267,8 +2262,8 @@ function shareResult() {
   if (!results) return;
   const p = results.top.legend;
   const simPct = (Math.max(0, (1 - results.top.dist / 20.1) * 100)).toFixed(1);
-  const dimNames = ['⚔️ 侵略','🧠 智略','🚀 机动','🤝 协作','🛡️ 韧性'];
-  const text = `🎮 APEX 🎮\n\n✨ 我的传奇人格：${p[1]}（${p[2]}）\n🎯 匹配度：${simPct}%\n📊 五维数据：\n${dimNames.map((d, i) => `  ${d}: ${Math.round(results.userDims[i] * 10) / 10}/10`).join('\n')}\n\n😎 你也来测测你的传奇人格！`;
+  const dimNames = ['侵略','智略','机动','协作','韧性'];
+  const text = `APEX\n\n我的传奇人格：${p[1]}（${p[2]}）\n匹配度：${simPct}%\n五维数据：\n${dimNames.map((d, i) => `  ${d}: ${Math.round(results.userDims[i] * 10) / 10}/10`).join('\n')}\n\n你也来测测你的传奇人格！`;
 
   if (navigator.clipboard) {
     navigator.clipboard.writeText(text).then(() => showToast('已复制到剪贴板'));
@@ -2322,12 +2317,12 @@ document.addEventListener('keydown', (e) => {
   const quiz = document.getElementById('screen-quiz');
   if (quiz.classList.contains('hidden')) return;
 
-  if (e.key >= '1' && e.key <= '4') selectOption(parseInt(e.key) - 1);
+  if (e.key >= '1'&& e.key <= '4') selectOption(parseInt(e.key) - 1);
   if (e.key.toLowerCase() === 'a') selectOption(0);
   if (e.key.toLowerCase() === 'b') selectOption(1);
   if (e.key.toLowerCase() === 'c') selectOption(2);
   if (e.key.toLowerCase() === 'd') selectOption(3);
-  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); nextQuestion(); }
+  if (e.key === 'Enter'|| e.key === '') { e.preventDefault(); nextQuestion(); }
 });
 </script>
 </body>
