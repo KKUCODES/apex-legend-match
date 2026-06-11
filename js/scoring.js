@@ -1,13 +1,72 @@
-import { LEGENDS, LEGEND_PROFILES } from './data.js';
+import {
+  EASTER_EGG_OPTION_SCORES,
+  EASTER_EGG_RULES,
+  LEGENDS,
+  LEGEND_PROFILES,
+  QUESTIONS,
+} from './data.js';
 
 // ============================================================
 //  COMPUTATION
 // ============================================================
-export function normalizeScores(scores) {
-  return scores.map(s => {
-    const n = 1 + (s / 30) * 9;
-    return Math.max(1, Math.min(10, Math.round(n * 10) / 10));
+const DIMENSION_COUNT = 5;
+const HIDDEN_LEGEND_ID_START = 90;
+const CENTERED_VECTOR_EPSILON = 0.25;
+const CENTER_ABSORPTION_WEIGHT = 0.3;
+
+function getScoreBounds() {
+  const min = Array(DIMENSION_COUNT).fill(0);
+  const max = Array(DIMENSION_COUNT).fill(0);
+
+  QUESTIONS.forEach(question => {
+    for (let i = 0; i < DIMENSION_COUNT; i++) {
+      const values = question.opts.map(option => option[1][i]);
+      min[i] += Math.min(...values);
+      max[i] += Math.max(...values);
+    }
   });
+
+  return { min, max };
+}
+
+const SCORE_BOUNDS = getScoreBounds();
+const DIMENSION_CENTER = getNeutralDimensionCenter();
+const EASTER_EGG_MAX_SCORES = getEasterEggMaxScores();
+
+export function normalizeScores(scores) {
+  return scores.map((s, i) => normalizeScoreValue(s, i));
+}
+
+function normalizeScoreValue(score, dimensionIndex) {
+  const range = SCORE_BOUNDS.max[dimensionIndex] - SCORE_BOUNDS.min[dimensionIndex] || 1;
+  const n = 1 + ((score - SCORE_BOUNDS.min[dimensionIndex]) / range) * 9;
+  return Math.max(1, Math.min(10, Math.round(n * 10) / 10));
+}
+
+function getNeutralDimensionCenter() {
+  const rawCenter = Array(DIMENSION_COUNT).fill(0);
+
+  QUESTIONS.forEach(question => {
+    for (let i = 0; i < DIMENSION_COUNT; i++) {
+      rawCenter[i] += question.opts.reduce((sum, option) => sum + option[1][i], 0) / question.opts.length;
+    }
+  });
+
+  return rawCenter.map((score, i) => normalizeScoreValue(score, i));
+}
+
+function getEasterEggMaxScores() {
+  const ids = Object.keys(EASTER_EGG_RULES);
+  const maxScores = Object.fromEntries(ids.map(id => [id, 0]));
+
+  EASTER_EGG_OPTION_SCORES.forEach(row => {
+    ids.forEach(id => {
+      const bestForQuestion = Math.max(0, ...row.map(option => option[id] || 0));
+      maxScores[id] += bestForQuestion;
+    });
+  });
+
+  return maxScores;
 }
 
 export function euclideanDist(a, b) {
@@ -16,19 +75,114 @@ export function euclideanDist(a, b) {
   return Math.sqrt(sum);
 }
 
-export function computeResults(userDims) {
-  const matches = LEGENDS.map(p => ({
-    legend: p, dist: euclideanDist(userDims, p.slice(4))
-  }));
-  matches.sort((a, b) => a.dist - b.dist);
+function centeredCosineDist(a, b) {
+  let dot = 0;
+  let normA = 0;
+  let normB = 0;
+
+  for (let i = 0; i < DIMENSION_COUNT; i++) {
+    const av = a[i] - DIMENSION_CENTER[i];
+    const bv = b[i] - DIMENSION_CENTER[i];
+    dot += av * bv;
+    normA += av * av;
+    normB += bv * bv;
+  }
+
+  const magA = Math.sqrt(normA);
+  const magB = Math.sqrt(normB);
+  if (magA < CENTERED_VECTOR_EPSILON || magB < CENTERED_VECTOR_EPSILON) {
+    return 1 + euclideanDist(a, b) / 20.1;
+  }
+
+  return 1 - dot / (magA * magB);
+}
+
+function centeredMagnitude(dims) {
+  let sum = 0;
+  for (let i = 0; i < DIMENSION_COUNT; i++) {
+    sum += (dims[i] - DIMENSION_CENTER[i]) ** 2;
+  }
+  return Math.sqrt(sum);
+}
+
+function combatProfileDist(userDims, legendDims) {
+  // 防止过于接近中心的角色吸收大量轻微倾向答案。
+  const centerPenalty = CENTER_ABSORPTION_WEIGHT / (centeredMagnitude(legendDims) + 0.75);
+  return centeredCosineDist(userDims, legendDims) + centerPenalty;
+}
+
+function buildMatch(userDims, legend) {
+  const legendDims = legend.slice(4);
+  return {
+    legend,
+    dist: euclideanDist(userDims, legendDims),
+    rankScore: combatProfileDist(userDims, legendDims),
+  };
+}
+
+export function computeResults(userDims, eggScores = {}) {
+  const playableMatches = LEGENDS
+    .filter(p => p[0] < HIDDEN_LEGEND_ID_START)
+    .map(p => buildMatch(userDims, p));
+
+  playableMatches.sort((a, b) => a.rankScore - b.rankScore);
+
+  const hiddenMatches = LEGENDS
+    .filter(p => p[0] >= HIDDEN_LEGEND_ID_START)
+    .map(p => buildMatch(userDims, p));
+
+  hiddenMatches.sort((a, b) => a.rankScore - b.rankScore);
+
+  const bestHidden = selectEasterEggMatch(hiddenMatches, eggScores);
+  const matches = bestHidden ? [bestHidden, ...playableMatches] : [...playableMatches];
+
   return { top: matches[0], userDims, all: matches };
+}
+
+function selectEasterEggMatch(hiddenMatches, eggScores) {
+  let best = null;
+
+  hiddenMatches.forEach(match => {
+    const id = match.legend[0];
+    const rule = EASTER_EGG_RULES[id];
+    if (!rule) return;
+
+    const score = eggScores[id] || 0;
+    if (score < rule.minScore) return;
+
+    const surplus = score - rule.minScore;
+    const completion = score / (EASTER_EGG_MAX_SCORES[id] || rule.minScore);
+    if (
+      !best ||
+      completion > best.completion ||
+      (completion === best.completion && surplus > best.surplus) ||
+      (completion === best.completion && surplus === best.surplus && match.dist < best.match.dist)
+    ) {
+      best = { match, score, surplus, completion };
+    }
+  });
+
+  if (!best) {
+    return null;
+  }
+
+  return {
+    ...best.match,
+    eggScore: best.score,
+    eggThreshold: EASTER_EGG_RULES[best.match.legend[0]].minScore,
+    eggCompletion: best.completion,
+  };
+}
+
+export function getScoreDebugInfo() {
+  return SCORE_BOUNDS;
 }
 
 export function generateDescription(legend, dist, userDims, legendDims) {
   const name = legend[1];
   const en = legend[2];
   const id = legend[0];
-  const dimKeys = ['侵略','智略','机动','协作','韧性'];
+  const dimKeys = ['进攻欲','智略','机动性','团队协作','韧性'];
 
   const matchPct = parseFloat(((1 - dist / 20.1) * 100).toFixed(1));
 

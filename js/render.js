@@ -3,7 +3,7 @@ import { drawRadar } from './radar.js';
 import { generateDescription } from './scoring.js';
 
 const OPTION_LABELS = ['A', 'B', 'C', 'D'];
-const DIMENSION_NAMES = ['进攻欲','侦察力','控场力','团队协作','应变性'];
+const DIMENSION_NAMES = ['进攻欲','智略','机动性','团队协作','韧性'];
 
 // ============================================================
 //  SCREEN MANAGEMENT
@@ -56,10 +56,10 @@ export function renderResult(results) {
   const classColor = CLASS_COLORS[p[3]] || '#DA292A';
   const uv = results.userDims.map(d => Math.round(d * 10) / 10);
   const pv = p.slice(4);
-  const neighbors = results.all.filter(n => n.legend[0] !== 99).slice(1, 4);
+  const neighbors = results.all.filter(n => n.legend[0] !== p[0] && n.legend[0] < 90).slice(0, 3);
 
   const pctNum = parseFloat(matchPct);
-  const isEasterEgg = p[0] === 99;
+  const isEasterEgg = p[0] >= 90;
   const tierLabel = isEasterEgg ? '隐藏档案': pctNum >= 85 ? '传奇级契合': pctNum >= 70 ? '战术协同': pctNum >= 55 ? '同队感应': '外域路人';
 
   const now = new Date();

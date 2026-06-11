@@ -1,4 +1,4 @@
-import { QUESTIONS } from './data.js';
+import { EASTER_EGG_OPTION_SCORES, EASTER_EGG_RULES, QUESTIONS } from './data.js';
 import { initParticles } from './effects.js';
 import { computeResults, normalizeScores } from './scoring.js';
 import {
@@ -15,10 +15,15 @@ import {
 // ============================================================
 const state = {
   scores: [0,0,0,0,0],
+  eggScores: createEggScores(),
   currentQ: 0,
   selectedIdx: -1,
   results: null,
 };
+
+function createEggScores() {
+  return Object.fromEntries(Object.keys(EASTER_EGG_RULES).map(id => [id, 0]));
+}
 
 // ============================================================
 //  QUIZ FLOW
@@ -27,6 +32,7 @@ function startQuiz() {
   state.currentQ = 0;
   state.selectedIdx = -1;
   state.scores = [0,0,0,0,0];
+  state.eggScores = createEggScores();
   renderQuestion(state.currentQ);
   showScreen('quiz');
 }
@@ -41,6 +47,10 @@ function nextQuestion() {
   if (state.selectedIdx < 0) return;
   const dims = QUESTIONS[state.currentQ].opts[state.selectedIdx][1];
   for (let i = 0; i < 5; i++) state.scores[i] += dims[i];
+  const eggScores = EASTER_EGG_OPTION_SCORES[state.currentQ]?.[state.selectedIdx] || {};
+  Object.entries(eggScores).forEach(([id, score]) => {
+    state.eggScores[id] = (state.eggScores[id] || 0) + score;
+  });
 
   if (state.currentQ < QUESTIONS.length - 1) {
     state.currentQ++;
@@ -49,7 +59,7 @@ function nextQuestion() {
     return;
   }
 
-  state.results = computeResults(normalizeScores(state.scores));
+  state.results = computeResults(normalizeScores(state.scores), state.eggScores);
   showScreen('result');
   renderResult(state.results);
 }
