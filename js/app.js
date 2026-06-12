@@ -1,6 +1,12 @@
-import { EASTER_EGG_OPTION_SCORES, EASTER_EGG_RULES, QUESTIONS } from './data.js';
+import {
+  EASTER_EGG_OPTION_SCORES,
+  EASTER_EGG_RULES,
+  OPTION_TRAIT_SCORES,
+  QUESTIONS,
+  TRAIT_KEYS,
+} from './data.js';
 import { initParticles } from './effects.js';
-import { computeResults, normalizeScores } from './scoring.js';
+import { computeResults, normalizeScores, normalizeTraitScores } from './scoring.js';
 import {
   markSelectedOption,
   renderQuestion,
@@ -15,11 +21,16 @@ import {
 // ============================================================
 const state = {
   scores: [0,0,0,0,0],
+  traitScores: createTraitScores(),
   eggScores: createEggScores(),
   currentQ: 0,
   selectedIdx: -1,
   results: null,
 };
+
+function createTraitScores() {
+  return Array(TRAIT_KEYS.length).fill(0);
+}
 
 function createEggScores() {
   return Object.fromEntries(Object.keys(EASTER_EGG_RULES).map(id => [id, 0]));
@@ -32,6 +43,7 @@ function startQuiz() {
   state.currentQ = 0;
   state.selectedIdx = -1;
   state.scores = [0,0,0,0,0];
+  state.traitScores = createTraitScores();
   state.eggScores = createEggScores();
   renderQuestion(state.currentQ);
   showScreen('quiz');
@@ -47,6 +59,10 @@ function nextQuestion() {
   if (state.selectedIdx < 0) return;
   const dims = QUESTIONS[state.currentQ].opts[state.selectedIdx][1];
   for (let i = 0; i < 5; i++) state.scores[i] += dims[i];
+  const traits = OPTION_TRAIT_SCORES[state.currentQ]?.[state.selectedIdx] || [];
+  traits.forEach((score, i) => {
+    state.traitScores[i] = (state.traitScores[i] || 0) + score;
+  });
   const eggScores = EASTER_EGG_OPTION_SCORES[state.currentQ]?.[state.selectedIdx] || {};
   Object.entries(eggScores).forEach(([id, score]) => {
     state.eggScores[id] = (state.eggScores[id] || 0) + score;
@@ -59,7 +75,11 @@ function nextQuestion() {
     return;
   }
 
-  state.results = computeResults(normalizeScores(state.scores), state.eggScores);
+  state.results = computeResults(
+    normalizeScores(state.scores),
+    state.eggScores,
+    normalizeTraitScores(state.traitScores),
+  );
   showScreen('result');
   renderResult(state.results);
 }

@@ -2,17 +2,24 @@ import {
   EASTER_EGG_OPTION_SCORES,
   EASTER_EGG_RULES,
   LEGENDS,
+  LEGEND_MATCH_CALIBRATION,
+  LEGEND_TRAIT_PROFILES,
   LEGEND_PROFILES,
+  OPTION_TRAIT_SCORES,
   QUESTIONS,
+  TRAIT_KEYS,
 } from './data.js';
 
 // ============================================================
 //  COMPUTATION
 // ============================================================
 const DIMENSION_COUNT = 5;
+const TRAIT_COUNT = TRAIT_KEYS.length;
 const HIDDEN_LEGEND_ID_START = 90;
 const CENTERED_VECTOR_EPSILON = 0.25;
 const CENTER_ABSORPTION_WEIGHT = 0.3;
+const DIMENSION_RANK_WEIGHT = 0.65;
+const TRAIT_RANK_WEIGHT = 1.35;
 
 function getScoreBounds() {
   const min = Array(DIMENSION_COUNT).fill(0);
@@ -30,6 +37,7 @@ function getScoreBounds() {
 }
 
 const SCORE_BOUNDS = getScoreBounds();
+const TRAIT_SCORE_BOUNDS = getTraitScoreBounds();
 const DIMENSION_CENTER = getNeutralDimensionCenter();
 const EASTER_EGG_MAX_SCORES = getEasterEggMaxScores();
 
@@ -37,10 +45,35 @@ export function normalizeScores(scores) {
   return scores.map((s, i) => normalizeScoreValue(s, i));
 }
 
+export function normalizeTraitScores(scores) {
+  return scores.map((s, i) => normalizeTraitScoreValue(s, i));
+}
+
 function normalizeScoreValue(score, dimensionIndex) {
   const range = SCORE_BOUNDS.max[dimensionIndex] - SCORE_BOUNDS.min[dimensionIndex] || 1;
   const n = 1 + ((score - SCORE_BOUNDS.min[dimensionIndex]) / range) * 9;
   return Math.max(1, Math.min(10, Math.round(n * 10) / 10));
+}
+
+function normalizeTraitScoreValue(score, traitIndex) {
+  const range = TRAIT_SCORE_BOUNDS.max[traitIndex] - TRAIT_SCORE_BOUNDS.min[traitIndex] || 1;
+  const n = 1 + ((score - TRAIT_SCORE_BOUNDS.min[traitIndex]) / range) * 9;
+  return Math.max(1, Math.min(10, Math.round(n * 10) / 10));
+}
+
+function getTraitScoreBounds() {
+  const min = Array(TRAIT_COUNT).fill(0);
+  const max = Array(TRAIT_COUNT).fill(0);
+
+  OPTION_TRAIT_SCORES.forEach(row => {
+    for (let i = 0; i < TRAIT_COUNT; i++) {
+      const values = row.map(option => option[i] || 0);
+      min[i] += Math.min(...values);
+      max[i] += Math.max(...values);
+    }
+  });
+
+  return { min, max };
 }
 
 function getNeutralDimensionCenter() {
@@ -111,25 +144,41 @@ function combatProfileDist(userDims, legendDims) {
   return centeredCosineDist(userDims, legendDims) + centerPenalty;
 }
 
-function buildMatch(userDims, legend) {
+function traitProfileDist(userTraits, legendId) {
+  const profile = LEGEND_TRAIT_PROFILES[legendId];
+  if (!userTraits || !profile) return 0;
+
+  let sum = 0;
+  for (let i = 0; i < TRAIT_COUNT; i++) {
+    sum += Math.abs((userTraits[i] || 1) - (profile[i] || 1));
+  }
+
+  return sum / (TRAIT_COUNT * 9);
+}
+
+function buildMatch(userDims, legend, userTraits) {
   const legendDims = legend.slice(4);
+  const dimensionRank = combatProfileDist(userDims, legendDims);
+  const traitRank = traitProfileDist(userTraits, legend[0]);
+  const calibration = LEGEND_MATCH_CALIBRATION[legend[0]] || 0;
   return {
     legend,
     dist: euclideanDist(userDims, legendDims),
-    rankScore: combatProfileDist(userDims, legendDims),
+    rankScore: dimensionRank * DIMENSION_RANK_WEIGHT + traitRank * TRAIT_RANK_WEIGHT + calibration,
+    traitRank,
   };
 }
 
-export function computeResults(userDims, eggScores = {}) {
+export function computeResults(userDims, eggScores = {}, userTraits = null) {
   const playableMatches = LEGENDS
     .filter(p => p[0] < HIDDEN_LEGEND_ID_START)
-    .map(p => buildMatch(userDims, p));
+    .map(p => buildMatch(userDims, p, userTraits));
 
   playableMatches.sort((a, b) => a.rankScore - b.rankScore);
 
   const hiddenMatches = LEGENDS
     .filter(p => p[0] >= HIDDEN_LEGEND_ID_START)
-    .map(p => buildMatch(userDims, p));
+    .map(p => buildMatch(userDims, p, userTraits));
 
   hiddenMatches.sort((a, b) => a.rankScore - b.rankScore);
 
@@ -175,7 +224,7 @@ function selectEasterEggMatch(hiddenMatches, eggScores) {
 }
 
 export function getScoreDebugInfo() {
-  return SCORE_BOUNDS;
+  return { dimensions: SCORE_BOUNDS, traits: TRAIT_SCORE_BOUNDS };
 }
 
 export function generateDescription(legend, dist, userDims, legendDims) {
